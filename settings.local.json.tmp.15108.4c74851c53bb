@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git subtree *)",
+      "Bash(git --version)",
+      "Bash(git checkout *)",
+      "Bash(cp AgentSpec/AdditionalSpecs.md .localSpec/AdditionalSpecs.md)",
+      "Bash(cp AgentSpec/AGENT.md .localSpec/AGENT.md)",
+      "Bash(cp AgentSpec/audit.md .localSpec/audit.md)",
+      "Bash(cd /home/flipoyo/.cgs/CGS20260905095916/cgitsync/.claude *)",
+      "Bash(set -e)",
+      "Bash(pixi run *)",
+      "Bash(timeout 90 pixi install)",
+      "Bash(pixi run python3 -c ' *)",
+      "Bash(git -C .agentSpec log --oneline -2)",
+      "Bash(git -C .agentSpec remote -v)",
+      "Bash(git -C .localSpec log --oneline --all -3)",
+      "Bash(git -C .localSpec branch)",
+      "Bash(git -C .claude log --oneline --all -3)",
+      "Bash(git -C .claude branch)",
+      "Bash(git -C .claude remote -v)",
+      "Bash(grep -v '^\\\\.$\\\\|^\\\\.\\\\.$')",
+      "Bash(timeout 20 git ls-remote git@github.com:flipoyo/DevSpec.git)",
+      "Bash(timeout 25 git ls-remote --heads origin)",
+      "Bash(git -C .claude log --oneline -1 main)",
+      "Bash(git -C .claude log --oneline -1 ComplexGitSync)",
+      "Read(//home/flipoyo/Programmes/ComplexGitSync/**)",
+      "Bash(git -C /home/flipoyo/Programmes/ComplexGitSync branch --show-current)",
+      "Bash(git -C /home/flipoyo/Programmes/ComplexGitSync log --oneline -1)",
+      "Bash(timeout 60 git push origin main)",
+      "Bash(timeout 25 git ls-remote origin main)",
+      "Bash(cd /home/flipoyo/.cgs/CGS20260905095916/cgitsync *)",
+      "Bash(git -C .claude add -A)",
+      "Bash(git -C .claude commit -q -m ' *)",
+      "Bash(git -C .localSpec add -A)",
+      "Bash(git -C .localSpec commit -q -m ' *)",
+      "Bash(timeout 60 git -C .claude push origin ComplexGitSync)"
+    ],
+    "additionalDirectories": [
+      "/home/flipoyo/.cgs/CGS20260905095916/cgitsync/.claude"
+    ]
+  }
+}

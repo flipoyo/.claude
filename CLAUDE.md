@@ -26,7 +26,7 @@ before every commit.
 graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
     CLAUDE -->|deeper spec| SPEC[".localSpec/AdditionalSpecs.md"]
-    CLAUDE -->|doc rules| STYLE[".agentSpec/DOCSTYLE.md"]
+    CLAUDE -->|doc rules| STYLE[".agentSpec/DevSpec/DOCSTYLE.md"]
     CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
@@ -189,9 +189,11 @@ identifiers.
   Scientific editing — and how they hand off work), and `audit.md`
   (findings, legacy references, open decisions/risks).
 - `.agentSpec/` — a mount of `flipoyo/.agentSpec` (branch `main`, shared
-  across every project that uses it): `DevSpecs.md` (the project-agnostic
-  philosophy `.localSpec/AdditionalSpecs.md` and this file conform to),
-  `DOCSTYLE.md`, `TICKETLIFECYCLE.md`, and a generic `AGENT.md` template.
+  across every project that uses it), holding `TICKETLIFECYCLE.md` and its
+  own `install.cgs`, which mounts `flipoyo/DevSpec` one level deeper at
+  `.agentSpec/DevSpec/`: `DevSpecs.md` (the project-agnostic philosophy
+  `.localSpec/AdditionalSpecs.md` and this file conform to), `DOCSTYLE.md`,
+  and a generic `AGENT.md` template.
 - `AgentSpec/` — active planning tickets and `AgentSpec/archive/` —
   completed/superseded plans, kept as historical record. Holds nothing
   else; every other agent-facing document lives in `.localSpec/` or
@@ -199,7 +201,7 @@ identifiers.
 
 ## Document conventions
 
-Follow [.agentSpec/DOCSTYLE.md](.agentSpec/DOCSTYLE.md) for how any Markdown
+Follow [.agentSpec/DevSpec/DOCSTYLE.md](.agentSpec/DevSpec/DOCSTYLE.md) for how any Markdown
 document in this repo is written — abstract first, mermaid graph, audience
 separation, length, one authoritative file per purpose. It applies to every
 `README.md`, spec, and file under `docs/`.
@@ -211,13 +213,13 @@ short enough to read once. This bar is strictest for `tutorials/`,
 context to lean on; see DOCSTYLE.md §5 for the full rule, worked examples,
 and where it loosens.
 
-Every created document — specs (`.agentSpec/DevSpecs.md`, `.localSpec/AdditionalSpecs.md`),
+Every created document — specs (`.agentSpec/DevSpec/DevSpecs.md`, `.localSpec/AdditionalSpecs.md`),
 planning tickets (`DevPlan*.md`, `DevPlanTickets*.md`, `CorPlan.md`-style
 plans), `.localSpec/audit.md`, `README.md`, and `docs/tutorials/*.md` — opens with a
 `*Created: YYYY-MM-DD*` line directly under its `# ` title, set once at
 authoring time and never rewritten on later edits. It records when the
 document was written, not when it was last touched: a "last updated" claim
-rots the moment someone forgets to bump it, which `.agentSpec/DOCSTYLE.md`
+rots the moment someone forgets to bump it, which `.agentSpec/DevSpec/DOCSTYLE.md`
 §6 already forbids ("no stale-by-design content"); a creation date is a
 historical fact and cannot go stale the same way.
 
