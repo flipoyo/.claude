@@ -1,2 +1,5 @@
 # Machine-specific permissions — never shared across checkouts or projects.
 settings.local.json
+# Claude Code writes settings.local.json through a temp file first; a crash
+# mid-write would otherwise leave this mount reporting dirty forever.
+settings.local.json.tmp.*
