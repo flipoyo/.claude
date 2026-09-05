@@ -1,0 +1,2 @@
+# Machine-specific permissions — never shared across checkouts or projects.
+settings.local.json
