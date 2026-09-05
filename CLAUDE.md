@@ -213,6 +213,14 @@ short enough to read once. This bar is strictest for `tutorials/`,
 context to lean on; see DOCSTYLE.md §5 for the full rule, worked examples,
 and where it loosens.
 
+**This includes the report you write when you finish a task**, and there
+the bar is strictest of all. Say what works now, what changed, what is
+unfinished, and what the reader must decide — in that order, in short
+sentences, naming files and commands rather than describing them. The
+reader has been away from the task and should not have to decode the
+summary to find out where things stand. DOCSTYLE.md §5 carries the full
+rule.
+
 Every created document — specs (`.agentSpec/DevSpec/DevSpecs.md`, `.localSpec/AdditionalSpecs.md`),
 planning tickets (`DevPlan*.md`, `DevPlanTickets*.md`, `CorPlan.md`-style
 plans), `.localSpec/audit.md`, `README.md`, and `docs/tutorials/*.md` — opens with a
