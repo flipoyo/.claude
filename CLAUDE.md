@@ -124,7 +124,8 @@ committing, as part of that task's change, not as a separate follow-up.
 | Module | Responsibility |
 |---|---|
 | `cgs_format.py` | `.cgs` TOML parsing/authoring grammar, normalization, static validation, `CgsDocument`, serialization. Deterministic and offline at its core — no `subprocess`, no Git, no remote calls; its `ConfigDocumentIOMixin`-derived file I/O is the one explicit Ring-1 exception. |
-| `git_repo.py` | Canonical repository identity, provider registry, remote URL construction, per-repository runtime state. |
+| `git_repo.py` | Canonical repository identity, provider registry, remote URL construction, per-repository runtime state. Owns `RepoScope`: which repositories a tree-wide command may write. `pinned` = configuration repo shared with other projects, read-only unless the entry adds `writable = true`; `--private` targets the writable ones. |
+| `git_branch.py` | The only implementation of the `.cgs` branch fallback chain (`fallback_branch` → `default_branch` → `project.default_branch` → `DEFAULT_BRANCH`) and of the pinning rule. Ring 0 — pure, offline; a resolver, not a registry: it holds no tree and no pinning state. Do not write a second copy of that chain anywhere. |
 | `git_tree.py` | Tree structures (`GitTree`/`WorkingGitTree`), traversal, lifecycle state; `to_cgs()` only delegates to `cgs_format.py`. Also maintains `.gitignore` across the tree (`sync_gitignore`) — filesystem-only, no Git/subprocess. |
 | `gts_document.py` | `.gts` runtime state-snapshot parsing/validation; the one canonical content-hash builder. |
 | `git_runner.py` | Git subprocess wrapper — the sole `import subprocess` module. |
@@ -147,7 +148,10 @@ Data flow: `CLI / Python caller → ComplexGitSyncClient.configure() → cgs_for
 
 `parse_repo_id()` in `cgs_format.py` is the *only* repo-identifier parser —
 don't add another one in `cli/`, `git_tree.py`, `git_repo.py`, or
-`orchestre.py`. Keep parsing/validation offline-safe; only explicit runtime
+`orchestre.py`. The same rule holds for branches: `git_branch.py` is the
+*only* implementation of the `.cgs` branch fallback chain and of the
+pinning rule — it was six private copies across five modules before that
+module existed. Keep parsing/validation offline-safe; only explicit runtime
 Git operations may touch the network.
 
 **The CLI mirrors the Python API.** End users only use the CLI, so every
