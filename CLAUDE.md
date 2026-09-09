@@ -125,13 +125,13 @@ committing, as part of that task's change, not as a separate follow-up.
 |---|---|
 | `cgs_format.py` | `.cgs` TOML parsing/authoring grammar, normalization, static validation, `CgsDocument`, serialization. Deterministic and offline at its core — no `subprocess`, no Git, no remote calls; its `ConfigDocumentIOMixin`-derived file I/O is the one explicit Ring-1 exception. |
 | `git_repo.py` | Canonical repository identity, provider registry, remote URL construction, per-repository runtime state. Owns `RepoScope`: which repositories a tree-wide command may write. `private` = a repository that configures the project rather than being it, read-only unless the entry adds `writable = true`; `--private` targets the writable ones. Scope reads the *effective* flags — `git_tree.propagate_privacy` pushes a parent's privacy onto everything nested inside it. |
-| `git_branch.py` | The only implementation of the `.cgs` branch fallback chain (`fallback_branch` → `default_branch` → `project.default_branch` → `DEFAULT_BRANCH`) and of the privacy rule — including the private/local naming rule (`private_local_branch`): `<project name>` on `main`, `<project name>_<branch>` otherwise. Its separator constant never leaves this module. Ring 0 — pure, offline; a resolver, not a registry: it holds no tree and no pinning state. Do not write a second copy of that chain anywhere. |
+| `git_branch.py` | The only implementation of the `.cgs` branch fallback chain (`fallback_branch` → `default_branch` → `project.default_branch` → `DEFAULT_BRANCH`) and of the privacy rule — including the private/local naming rule (`private_local_branch`): `<project name>` on `main`, `<project name>_<branch>` otherwise. Its separator constant never leaves this module. Ring 0 — pure, offline; a resolver, not a registry: it holds no tree and no privacy state. Do not write a second copy of that chain anywhere. |
 | `git_tree.py` | Tree structures (`GitTree`/`WorkingGitTree`), traversal, lifecycle state; `to_cgs()` only delegates to `cgs_format.py`. Also maintains `.gitignore` across the tree (`sync_gitignore`) — filesystem-only, no Git/subprocess. Owns privacy state: `propagate_privacy` makes a parent's `private`/`writable` cover everything nested inside it. |
 | `gts_document.py` | `.gts` runtime state-snapshot parsing/validation; the one canonical content-hash builder. |
 | `git_runner.py` | Git subprocess wrapper — the sole `import subprocess` module. `merge`/`fetch` are operations; `can_merge_cleanly`/`branch_known` are read-only questions that never touch a worktree, which is what lets a preflight ask about every repo before acting on any. |
-| `operations.py` | Leaf/parent-first Git operations over a `WorkingGitTree` + `GitRunner`. Preflight checks only the repositories the operation's `RepoScope` selects, and measures a private repo against its own declared branch. `merge_tree` checks the whole scope before merging any of it, so a conflict anywhere leaves nothing merged. |
+| `operations.py` | Leaf/parent-first Git operations over a `WorkingGitTree` + `GitRunner`. Preflight checks only the repositories the operation's `RepoScope` selects, and measures a private repo against its own declared branch. `merge_tree` checks the whole scope before merging any of it, so a conflict anywhere leaves nothing merged. `add_tree`/`commit_tree`/`push_tree` return one `RepoOutcome` per repository visited — what changed, or why nothing did — so "nothing happened" is reportable rather than silent. |
 | `registry.py` | Translates `.cgs`/`.gts` documents to/from `WorkingGitTree`. **The `.gts` prevails over the `.cgs`** — a snapshot is the attested state, and a hand-edited `.cgs` must never be able to widen write access behind it. |
-| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`AgentSpec/20260828_Isolation_DevPlanTicket.md`). |
+| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`AgentSpec/20260828_Isolation_DevPlanTicket.md`). `snapshot_resolver.py`'s `describe_*` functions also carry *which input* chose the workspace (`--search-dir` > `$CGSHOME` > current directory) so `cli/` can print it and warn when the resolved CGSHOME does not contain the current directory; the module itself never prints. |
 | `ledger_entry.py`, `integrity.py`, `ledger_store.py` | Hash-chained register mechanics (entry construction, chain verification, atomic per-entry persistence) backing `cgitsync verify` — not yet wired into `SyncLedger`'s actual write path. |
 | `orchestre.py` | The `ComplexGitSyncClient` public facade and `Orchestre` coordination layer; delegates to every module above rather than re-implementing them; still owns run logging and the `.lgr` register/sync ledger directly. |
 | `config_document.py` / `config_document_io.py` | Format-neutral `ConfigDocument` base (pure) and its file-I/O mixin (Ring 1), shared by `CgsDocument`/`GtsDocument`. |
@@ -150,7 +150,7 @@ Data flow: `CLI / Python caller → ComplexGitSyncClient.configure() → cgs_for
 don't add another one in `cli/`, `git_tree.py`, `git_repo.py`, or
 `orchestre.py`. The same rule holds for branches: `git_branch.py` is the
 *only* implementation of the `.cgs` branch fallback chain and of the
-pinning rule — it was six private copies across five modules before that
+privacy rule — it was six private copies across five modules before that
 module existed. Keep parsing/validation offline-safe; only explicit runtime
 Git operations may touch the network.
 
@@ -175,11 +175,10 @@ identifiers.
 - `src/ComplexGitSync/` — package source.
 - `tests/unit/`, `tests/integration/` — pytest suites (`pixi run test` runs both).
 - `examples/*.cgs`, `*.gts` — sample specs used in docs/tests.
-- `ComplexGitSync.cgs` (nested-mode) and `install.cgs` (standalone/bootstrap
-  mode, a plain copy of `examples/complexgitsync.cgs` — kept in sync by
-  `tests/unit/test_install_cgs.py`) — the two root-level `.cgs` files that
-  make ComplexGitSync manage itself as a multi-repo tree; see README.md's
-  Developer guide.
+- `install.cgs` — the single root-level `.cgs` that makes ComplexGitSync
+  manage itself as a multi-repo tree, in both standalone/bootstrap and
+  nested mode; see README.md's Developer guide. It has no copy under
+  `examples/`: one file, one source of truth.
 - `docs/` — LaTeX-built reference docs; generated `.aux`/`.log`/etc. are gitignored, the built PDFs are tracked.
 - `CLAUDE.md` (this file) and `AGENT.md` — tracked at the project root only
   as symbolic links into `.claude/`, a mount of `flipoyo/claude` (branch
