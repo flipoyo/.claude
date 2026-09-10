@@ -55,18 +55,20 @@ CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
 
 ### Bootstrapping a working checkout
 
-ComplexGitSync manages itself as a multi-repo tree (`install.cgs`, this
-project's root file): a fresh `git clone` alone gets you the code but not
-`docs/`, `.agentSpec/`, `.localSpec/`, or `.claude/`. Use `bootstrap`,
-pointed at `install.cgs`, to get a fully populated, independently
-live-editable checkout:
+ComplexGitSync manages itself as a multi-repo tree: a fresh `git clone`
+alone gets you the code but not `docs/`, `.agentSpec/`, `.localSpec/`, or
+`.claude/`. Use `bootstrap` pointed at **`complexgitsync4dev.cgs`**
+— the developer spec — to get a fully populated, independently
+live-editable checkout. (The root `install.cgs` is the *user* install: the
+tool and its documentation only. Bootstrapping that one leaves you without
+the specs you are reading.)
 
 ```bash
 git clone https://github.com/flipoyo/ComplexGitSync.git
 cd ComplexGitSync
 pixi install
 
-pixi run cgitsync bootstrap install.cgs ComplexGitSync
+pixi run cgitsync bootstrap complexgitsync4dev.cgs ComplexGitSync
 # Copy the export command from bootstrap's own output, or use:
 export CGSHOME=/home/user/.cgs/CGS20260831131233/ComplexGitSync
 
@@ -107,6 +109,28 @@ Do all of these as part of the change, not as a follow-up:
    `docs/Text/user_guide.tex`, and its client method in
    `docs/Text/api_python.tex`. The README half is enforced by
    `tests/unit/test_cli_smoke.py::test_readme_documents_every_cli_command`.
+6. **Deliver the commit messages.** Finishing a ticket includes writing
+   the commit message for every repository the change touched — the
+   project's own and each mounted configuration repository that changed.
+   They are separate Git repositories and commit separately, so each gets
+   its own message. Deliver them as text in the finishing report; whether
+   to commit is the owner's call unless the owner asks for it.
+
+## Attribution
+
+**The agent is not credited on commits.** No `Co-Authored-By` trailer and
+no "generated with" line on any commit, merge, or pull request, in any
+repository of this tree.
+
+Work done by an LLM agent under contract is a paid service, not
+authorship. Publishing and the scientific world already draw this line:
+paid assistance is acknowledged, not co-signed. Co-authorship would be the
+right word for work given freely; it is the wrong word for work invoiced.
+
+The agent is named once, in [README.md](README.md)'s *LLM assistance*
+section, and nowhere else. Keep that section current — it is the whole
+of the credit, so it carries the honesty that the commit trailers would
+otherwise have carried.
 
 ## Architecture boundary
 
@@ -175,10 +199,17 @@ identifiers.
 - `src/ComplexGitSync/` — package source.
 - `tests/unit/`, `tests/integration/` — pytest suites (`pixi run test` runs both).
 - `examples/*.cgs`, `*.gts` — sample specs used in docs/tests.
-- `install.cgs` — the single root-level `.cgs` that makes ComplexGitSync
-  manage itself as a multi-repo tree, in both standalone/bootstrap and
-  nested mode; see README.md's Developer guide. It has no copy under
-  `examples/`: one file, one source of truth.
+- `install.cgs` — the **user** install: ComplexGitSync and its
+  documentation, and nothing that configures how the project is developed.
+  It mounts no private repository, and `nested_config` on `docs` is
+  `disabled` so `docs/DocCGS.cgs` does not pull in `DocSpec`.
+- `complexgitsync4dev.cgs` — the **developer** install: the same
+  two repositories plus `.agentSpec`, `.localSpec` and `.claude`. This is
+  what makes ComplexGitSync manage its own working tree, and what
+  *Bootstrapping a working checkout* above uses. It is also
+  `tutorials/04_private_repos.md`'s worked example, being the only
+  checked-in spec that uses every kind of private entry. The two files are
+  not duplicates — one installs the tool, the other installs the workshop.
 - `docs/` — LaTeX-built reference docs; generated `.aux`/`.log`/etc. are gitignored, the built PDFs are tracked.
 - `CLAUDE.md` (this file) and `AGENT.md` — tracked at the project root only
   as symbolic links into `.claude/`, a mount of `flipoyo/claude` (branch
