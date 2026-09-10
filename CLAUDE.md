@@ -197,10 +197,13 @@ identifiers.
   `.agentSpec/DevSpec/`: `DevSpecs.md` (the project-agnostic philosophy
   `.localSpec/AdditionalSpecs.md` and this file conform to), `DOCSTYLE.md`,
   and a generic `AGENT.md` template.
-- `AgentSpec/` — active planning tickets and `AgentSpec/archive/` —
-  completed/superseded plans, kept as historical record. Holds nothing
-  else; every other agent-facing document lives in `.localSpec/` or
-  `.agentSpec/` instead.
+- `AgentSpec/` — planning tickets, in exactly two directories.
+  `AgentSpec/openTickets/` holds open ones, each named
+  `<priority>-<rank>_<Name>_DevPlanTicket.md`; `AgentSpec/archive/` holds
+  completed/superseded plans, stamped `YYYYMMDD_`, kept as historical
+  record. `AgentSpec/` itself holds nothing else, and no ticket sits loose
+  at that level; every other agent-facing document lives in `.localSpec/`
+  or `.agentSpec/` instead.
 
 ## Document conventions
 
@@ -234,12 +237,19 @@ rots the moment someone forgets to bump it, which `.agentSpec/DevSpec/DOCSTYLE.m
 §6 already forbids ("no stale-by-design content"); a creation date is a
 historical fact and cannot go stale the same way.
 
-Planning tickets additionally carry a filename lifecycle:
-active work lives as a plain-named file directly under `AgentSpec/`; once
-the ticket's work is implemented, it is renamed with a `YYYYMMDD_` stamp
-and moved to `AgentSpec/archive/`, in the same commit that implements it.
+Planning tickets additionally carry a filename lifecycle. An open ticket
+lives in `AgentSpec/openTickets/` as
+`<priority>-<rank>_<Name>_DevPlanTicket.md`: `<priority>` is `1`
+(prioritary — pick it up now) or `2` (stand-by — real work, not now), and
+`<rank>` is its position in that priority's own pile, counted from 1. A new
+ticket is appended to the end of its pile; a Ticket review re-ranks both
+piles by importance and compacts them so each runs 1..N. Once the ticket's
+work is implemented, the `<priority>-<rank>_` prefix is replaced by a
+`YYYYMMDD_` stamp and the file moves to `AgentSpec/archive/`, in the same
+commit that implements it.
 [.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
-authoritative statement of that rule — read it before finishing a ticket.
+authoritative statement of that rule — read it before opening or finishing
+a ticket.
 
 Standalone LaTeX documents (`docs/*.tex` with their own `\documentclass`)
 already carry `\date{\today}` on the title page — keep this on any new one.
