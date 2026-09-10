@@ -57,7 +57,7 @@ CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
 
 ComplexGitSync manages itself as a multi-repo tree: a fresh `git clone`
 alone gets you the code but not `docs/`, `.agentSpec/`, `.localSpec/`, or
-`.claude/`. Use `bootstrap` pointed at **`complexgitsync4dev.cgs`**
+`.claude/`. Use `bootstrap` pointed at **`examples/complexgitsync4dev.cgs`**
 — the developer spec — to get a fully populated, independently
 live-editable checkout. (The root `install.cgs` is the *user* install: the
 tool and its documentation only. Bootstrapping that one leaves you without
@@ -68,7 +68,7 @@ git clone https://github.com/flipoyo/ComplexGitSync.git
 cd ComplexGitSync
 pixi install
 
-pixi run cgitsync bootstrap complexgitsync4dev.cgs ComplexGitSync
+pixi run cgitsync bootstrap examples/complexgitsync4dev.cgs ComplexGitSync
 # Copy the export command from bootstrap's own output, or use:
 export CGSHOME=/home/user/.cgs/CGS20260831131233/ComplexGitSync
 
@@ -204,13 +204,16 @@ identifiers.
   documentation, and nothing that configures how the project is developed.
   It mounts no private repository, and `nested_config` on `docs` is
   `disabled` so `docs/DocCGS.cgs` does not pull in `DocSpec`.
-- `complexgitsync4dev.cgs` — the **developer** install: the same
+- `examples/complexgitsync4dev.cgs` — the **developer** install: the same
   two repositories plus `.agentSpec`, `.localSpec` and `.claude`. This is
   what makes ComplexGitSync manage its own working tree, and what
   *Bootstrapping a working checkout* above uses. It is also
-  `tutorials/04_private_repos.md`'s worked example, being the only
-  checked-in spec that uses every kind of private entry. The two files are
-  not duplicates — one installs the tool, the other installs the workshop.
+  `tutorials/04_private_repos.md`'s worked example and what CI dogfoods,
+  being the only checked-in spec that uses every kind of private entry.
+  The two files are not duplicates — one installs the tool, the other
+  installs the workshop. Only `install.cgs` sits at the repository root:
+  where a `.cgs` lives never affects the tree it describes, since the root
+  is CGSHOME resolved from `--output-path`/`$CGSHOME` plus `project.name`.
 - `docs/` — LaTeX-built reference docs; generated `.aux`/`.log`/etc. are gitignored, the built PDFs are tracked.
 - `CLAUDE.md` (this file) and `AGENT.md` — tracked at the project root only
   as symbolic links into `.claude/`, a mount of `flipoyo/claude` (branch
