@@ -109,12 +109,33 @@ Do all of these as part of the change, not as a follow-up:
    `docs/Text/user_guide.tex`, and its client method in
    `docs/Text/api_python.tex`. The README half is enforced by
    `tests/unit/test_cli_smoke.py::test_readme_documents_every_cli_command`.
-6. **Deliver the commit messages.** Finishing a ticket includes writing
-   the commit message for every repository the change touched — the
+6. **Deliver the commit message.** Finishing a ticket includes writing
+   the commit message for the repositories the change touched — the
    project's own and each mounted configuration repository that changed.
-   They are separate Git repositories and commit separately, so each gets
-   its own message. Deliver them as text in the finishing report; whether
-   to commit is the owner's call unless the owner asks for it.
+   Deliver it as text in the finishing report; whether to commit is the
+   owner's call unless the owner asks for it.
+
+   **One message. Plain English. Three lines at most.**
+
+   - **One message.** Write the *same* message for `commit` and for
+     `commit --private`. One change is one story, and a project
+     repository and the configuration repository that goes with it are
+     two halves of that story, not two stories. Do not write a variant
+     per repository.
+   - **Plain English.** Say what the change does for the person using the
+     tool, in words they would use. This is a deliberate tightening of
+     [.agentSpec/DevSpec/DOCSTYLE.md](.agentSpec/DevSpec/DOCSTYLE.md)
+     §5, which exempts commit messages — here they are not exempt. The
+     reader is somebody scanning `git log` months later, not somebody
+     holding the diff.
+   - **Three lines at most.** The whole message, not three paragraphs and
+     not a subject line plus three. No bullet lists, no file inventories,
+     no ticket numbers: the diff already says which files moved, and the
+     archived ticket already says why.
+
+   This governs the messages you write. It says nothing about the
+   messages ComplexGitSync generates for itself, such as the
+   `--commit-gitignore` one.
 
 ## Attribution
 
