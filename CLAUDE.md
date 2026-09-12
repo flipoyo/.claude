@@ -182,7 +182,7 @@ committing, as part of that task's change, not as a separate follow-up.
 | `orchestre.py` | The `ComplexGitSyncClient` public facade and `Orchestre` coordination layer; delegates to every module above rather than re-implementing them; still owns run logging and the `.lgr` register/sync ledger directly. |
 | `config_document.py` / `config_document_io.py` | Format-neutral `ConfigDocument` base (pure) and its file-I/O mixin (Ring 1), shared by `CgsDocument`/`GtsDocument`. |
 | `master.py` | Workspace-local Git identity (`MasterConfig`) for ComplexGitSync's own automated commits; defaults to local git config, overridable/persisted per `CGSHOME` via `.cgitsync/master.toml` — not part of the `.cgs`/`.gts` project spec. |
-| `cli/` | Argument/prompt collection only; delegates all `.cgs`/`.gts` semantics downstream. `_shared.py` (cross-command helpers) + `minimalist.py`/`expert.py`/`configuration.py` (one module per command group, README's own grouping) + `__init__.py` (assembles the parser, exposes `main`). |
+| `cli/` | Argument/prompt collection only; delegates all `.cgs`/`.gts` semantics downstream. `_shared.py` (cross-command helpers) + `minimalist.py`/`expert.py`/`configuration.py` (one module per command group, README's own grouping) + `suggest.py` (names the command a mistyped one most likely meant, after argparse has had its say — advice only: it never rewrites the arguments, runs the command it names, or changes argparse's exit code) + `__init__.py` (assembles the parser, exposes `main`). |
 
 See [.localSpec/AdditionalSpecs.md](.localSpec/AdditionalSpecs.md) for the
 full module/ring table and its ring-import rules (downward-only imports,
