@@ -255,7 +255,9 @@ identifiers.
   and a generic `AGENT.md` template.
 - `AgentSpec/` — planning tickets, in exactly two directories.
   `AgentSpec/openTickets/` holds open ones, each named
-  `<priority>-<rank>_<Name>_DevPlanTicket.md`; `AgentSpec/archive/` holds
+  `<priority>-<rank>_<Name>_DevPlanTicket.md` — or
+  `<priority>-<rank>_memDev-<Name>_DevPlanTicket.md` for the memory
+  workstream, the project's one topic prefix; `AgentSpec/archive/` holds
   completed/superseded plans, stamped `YYYYMMDD_`, kept as historical
   record. `AgentSpec/` itself holds nothing else, and no ticket sits loose
   at that level; every other agent-facing document lives in `.localSpec/`
@@ -306,6 +308,17 @@ commit that implements it.
 [.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
 authoritative statement of that rule — read it before opening or finishing
 a ticket.
+
+Every ticket also states the branch its work lands on, as a
+`*Branch: <name>*` line under its `*Created:*` line. **`main` for
+everything except memory work, which is developed on `memory-dev`** —
+`.cgitsync/`, the state area, the register/ledger, the `memory/` package,
+and the distant reference ledger. A memory ticket says so in its filename
+too: it carries the topic prefix `memDev-` after the rank, as
+`AgentSpec/openTickets/<priority>-<rank>_memDev-<Name>_DevPlanTicket.md`.
+`.localSpec/AdditionalSpecs.md`'s *Branches and ticket topics* section is
+the authoritative list of which branch and which topics this project has;
+TICKETLIFECYCLE.md §2.3 and §3 define the two conventions themselves.
 
 Standalone LaTeX documents (`docs/*.tex` with their own `\documentclass`)
 already carry `\date{\today}` on the title page — keep this on any new one.
