@@ -15,8 +15,10 @@ rules of its own.
    subsection points to [`docs/DevGuide/`](docs/DevGuide/README.md) for
    the full dependency graph and Tier↔Ring reconciliation);
    [`audit.md`](.localSpec/audit.md) — audit findings, legacy references,
-   and open decisions/risks. `AgentSpec/` (and its `archive/`) holds any
-   active `*_DevPlanTicket.md` — in-flight work.
+   and open decisions/risks; and
+   [`DevTickets/`](.localSpec/DevTickets/README.md) — the planning surface:
+   the owner's short tickets, the ranked `openTickets/` holding in-flight
+   `*_DevPlanTicket.md` work, and `archive/` for closed ones.
 3. [`DevSpecs.md`](.agentSpec/DevSpec/DevSpecs.md) — the underlying,
    project-agnostic philosophy all of the above conforms to. It lives, with
    `DOCSTYLE.md` and the generic `AGENT.md` template, in `flipoyo/DevSpec`,

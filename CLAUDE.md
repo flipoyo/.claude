@@ -177,7 +177,7 @@ committing, as part of that task's change, not as a separate follow-up.
 | `clone_guard.py` | Whether a directory `initialise` is about to delete and re-clone holds work that exists nowhere else: a dirty worktree, or commits no remote has. Read-only and worktree-free, so `orchestre.py` can ask about every pending repository before deleting any — a refusal leaves the whole tree on disk. Asks "which commits does no remote hold?", not "is this branch ahead of its upstream", so a detached `HEAD` on a pinned submodule commit does not block. Says nothing about whether a mount point is owned outright. |
 | `operations.py` | Leaf/parent-first Git operations over a `WorkingGitTree` + `GitRunner`. Preflight checks only the repositories the operation's `RepoScope` selects, and measures a private repo against its own declared branch. `merge_tree` checks the whole scope before merging any of it, so a conflict anywhere leaves nothing merged; `merge_tree_one_at_a_time` (`merge --resolve`) gives that up on purpose, stopping at the first conflict so a merge tool has a conflicted worktree to open. `merge_status` is the single place a repository's fate is decided, so the dry run and the merge cannot disagree. `add_tree`/`commit_tree`/`push_tree`/`remove_paths` return one `RepoOutcome` per repository visited — what changed, or why nothing did — so "nothing happened" is reportable rather than silent. `remove_paths` is the one scoped operation given its paths instead of sweeping for them, so its scope is a *filter*: a path owned by a repository outside the scope is refused by name, and nothing is removed anywhere. |
 | `registry.py` | Translates `.cgs`/`.gts` documents to/from `WorkingGitTree`. **The `.gts` prevails over the `.cgs`** — a snapshot is the attested state, and a hand-edited `.cgs` must never be able to widen write access behind it. |
-| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`AgentSpec/20260828_Isolation_DevPlanTicket.md`). `snapshot_resolver.py`'s `describe_*` functions also carry *which input* chose the workspace (`--search-dir` > `$CGSHOME` > current directory) so `cli/` can print it and warn when the resolved CGSHOME does not contain the current directory; the module itself never prints. |
+| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`.localSpec/DevTickets/archive/20260828_Isolation_DevPlanTicket.md`). `snapshot_resolver.py`'s `describe_*` functions also carry *which input* chose the workspace (`--search-dir` > `$CGSHOME` > current directory) so `cli/` can print it and warn when the resolved CGSHOME does not contain the current directory; the module itself never prints. |
 | `ledger_entry.py`, `integrity.py`, `ledger_store.py` | Hash-chained register mechanics (entry construction, chain verification, atomic per-entry persistence) backing `cgitsync verify` — not yet wired into `SyncLedger`'s actual write path. |
 | `orchestre.py` | The `ComplexGitSyncClient` public facade and `Orchestre` coordination layer; delegates to every module above rather than re-implementing them; still owns run logging and the `.lgr` register/sync ledger directly. |
 | `config_document.py` / `config_document_io.py` | Format-neutral `ConfigDocument` base (pure) and its file-I/O mixin (Ring 1), shared by `CgsDocument`/`GtsDocument`. |
@@ -245,23 +245,32 @@ identifiers.
   `AdditionalSpecs.md` (deeper spec/authoring reference beyond this file),
   `AGENT.md` (the roster of specialized agent roles for parallel multi-agent
   work on this project — Dev, CI/CD, Editing, Orchestration, Maths,
-  Scientific editing — and how they hand off work), and `audit.md`
-  (findings, legacy references, open decisions/risks).
+  Scientific editing — and how they hand off work), `audit.md`
+  (findings, legacy references, open decisions/risks), and `DevTickets/`
+  (the planning surface — see the next bullet).
 - `.agentSpec/` — a mount of `flipoyo/.agentSpec` (branch `main`, shared
   across every project that uses it), holding `TICKETLIFECYCLE.md` and its
   own `install.cgs`, which mounts `flipoyo/DevSpec` one level deeper at
   `.agentSpec/DevSpec/`: `DevSpecs.md` (the project-agnostic philosophy
   `.localSpec/AdditionalSpecs.md` and this file conform to), `DOCSTYLE.md`,
   and a generic `AGENT.md` template.
-- `AgentSpec/` — planning tickets, in exactly two directories.
-  `AgentSpec/openTickets/` holds open ones, each named
+- `.localSpec/DevTickets/` — **the planning surface, and it is private**;
+  the public repository holds no tickets at all. Four things live there,
+  and nothing else:
+  [`README.md`](.localSpec/DevTickets/README.md) (the loop below, in full),
+  `shortTickets/` (the owner's requests, in their own words),
+  `openTickets/` (the ranked plans, each named
   `<priority>-<rank>_<Name>_DevPlanTicket.md` — or
   `<priority>-<rank>_memDev-<Name>_DevPlanTicket.md` for the memory
-  workstream, the project's one topic prefix; `AgentSpec/archive/` holds
-  completed/superseded plans, stamped `YYYYMMDD_`, kept as historical
-  record. `AgentSpec/` itself holds nothing else, and no ticket sits loose
-  at that level; every other agent-facing document lives in `.localSpec/`
-  or `.agentSpec/` instead.
+  workstream, the project's one topic prefix), and `archive/` for
+  completed/superseded plans, stamped `YYYYMMDD_`, with
+  `archive/.closedUserTicket/` for short tickets that have been acted on.
+  **The loop:** the owner writes a short ticket; on their word the agent
+  brings every open ticket and every spec into line with it, in one pass;
+  the short ticket is then stamped and moved to `archive/.closedUserTicket/`
+  in that same change. A request made in conversation is written down and
+  filed the same way, so what was asked for does not live only in a chat
+  log.
 
 ## Document conventions
 
@@ -296,14 +305,14 @@ rots the moment someone forgets to bump it, which `.agentSpec/DevSpec/DOCSTYLE.m
 historical fact and cannot go stale the same way.
 
 Planning tickets additionally carry a filename lifecycle. An open ticket
-lives in `AgentSpec/openTickets/` as
+lives in `.localSpec/DevTickets/openTickets/` as
 `<priority>-<rank>_<Name>_DevPlanTicket.md`: `<priority>` is `1`
 (prioritary — pick it up now) or `2` (stand-by — real work, not now), and
 `<rank>` is its position in that priority's own pile, counted from 1. A new
 ticket is appended to the end of its pile; a Ticket review re-ranks both
 piles by importance and compacts them so each runs 1..N. Once the ticket's
 work is implemented, the `<priority>-<rank>_` prefix is replaced by a
-`YYYYMMDD_` stamp and the file moves to `AgentSpec/archive/`, in the same
+`YYYYMMDD_` stamp and the file moves to `.localSpec/DevTickets/archive/`, in the same
 commit that implements it.
 [.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
 authoritative statement of that rule — read it before opening or finishing
@@ -315,7 +324,7 @@ everything except memory work, which is developed on `memory-dev`** —
 `.cgitsync/`, the state area, the register/ledger, the `memory/` package,
 and the distant reference ledger. A memory ticket says so in its filename
 too: it carries the topic prefix `memDev-` after the rank, as
-`AgentSpec/openTickets/<priority>-<rank>_memDev-<Name>_DevPlanTicket.md`.
+`.localSpec/DevTickets/openTickets/<priority>-<rank>_memDev-<Name>_DevPlanTicket.md`.
 `.localSpec/AdditionalSpecs.md`'s *Branches and ticket topics* section is
 the authoritative list of which branch and which topics this project has;
 TICKETLIFECYCLE.md §2.3 and §3 define the two conventions themselves.
