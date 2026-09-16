@@ -261,10 +261,9 @@ identifiers.
   [`README.md`](.localSpec/DevTickets/README.md) (the loop below, in full),
   `shortTickets/` (the owner's requests, in their own words),
   `openTickets/` (the ranked plans, each named
-  `<priority>-<rank>_<Name>_DevPlanTicket.md` — or
-  `<priority>-<rank>_memDev-<Name>_DevPlanTicket.md` for the memory
-  workstream, the project's one topic prefix), and `archive/` for
-  completed/superseded plans, stamped `YYYYMMDD_`, with
+  `<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md` — `main_` for
+  ordinary work, `memory-dev_` for the memory workstream), and `archive/`
+  for completed/superseded plans, stamped `YYYYMMDD_`, with
   `archive/.closedUserTicket/` for short tickets that have been acted on.
   **The loop:** the owner writes a short ticket; on their word the agent
   brings every open ticket and every spec into line with it, in one pass;
@@ -307,27 +306,30 @@ historical fact and cannot go stale the same way.
 
 Planning tickets additionally carry a filename lifecycle. An open ticket
 lives in `.localSpec/DevTickets/openTickets/` as
-`<priority>-<rank>_<Name>_DevPlanTicket.md`: `<priority>` is `1`
-(prioritary — pick it up now) or `2` (stand-by — real work, not now), and
-`<rank>` is its position in that priority's own pile, counted from 1. A new
-ticket is appended to the end of its pile; a Ticket review re-ranks both
-piles by importance and compacts them so each runs 1..N. Once the ticket's
-work is implemented, the `<priority>-<rank>_` prefix is replaced by a
-`YYYYMMDD_` stamp and the file moves to `.localSpec/DevTickets/archive/`, in the same
-commit that implements it.
+`<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md`. `<branch>` is the
+branch the work lands on, always written out and `main` when nothing else
+applies; `<priority>` is `1` (prioritary — pick it up now) or `2`
+(stand-by — real work, not now); and `<rank>` is its position in that
+priority's own pile, counted from 1. A new ticket is appended to the end of
+its pile; a Ticket review re-ranks both piles by importance and compacts
+them so each runs 1..N. Once the ticket's work is implemented, the
+`<branch>_<priority>-<rank>_` prefixes are replaced by a `YYYYMMDD_` stamp
+and the file moves to `.localSpec/DevTickets/archive/`, in the same commit
+that implements it.
 [.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
 authoritative statement of that rule — read it before opening or finishing
 a ticket.
 
 Every ticket also states the branch its work lands on, as a
-`*Branch: <name>*` line under its `*Created:*` line. **`main` for
-everything except memory work, which is developed on `memory-dev`** —
-`.cgitsync/`, the state area, the register/ledger, the `memory/` package,
-and the distant reference ledger. A memory ticket says so in its filename
-too: it carries the topic prefix `memDev-` after the rank, as
-`.localSpec/DevTickets/openTickets/<priority>-<rank>_memDev-<Name>_DevPlanTicket.md`.
+`*Branch: <name>*` line under its `*Created:*` line, saying the same thing
+its filename says. **`main` for everything except memory work, which is
+developed on `memory-dev`** — `.cgitsync/`, the state area, the
+register/ledger, the `memory/` package, and the distant reference ledger.
+So a memory ticket is
+`.localSpec/DevTickets/openTickets/memory-dev_<priority>-<rank>_<Name>_DevPlanTicket.md`
+and everything else is `main_<priority>-<rank>_<Name>_DevPlanTicket.md`.
 `.localSpec/AdditionalSpecs.md`'s *Branches and ticket topics* section is
-the authoritative list of which branch and which topics this project has;
+the authoritative list of which branches this project has;
 TICKETLIFECYCLE.md §2.3 and §3 define the two conventions themselves.
 
 Standalone LaTeX documents (`docs/*.tex` with their own `\documentclass`)
