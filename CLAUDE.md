@@ -322,12 +322,15 @@ a ticket.
 
 Every ticket also states the branch its work lands on, as a
 `*Branch: <name>*` line under its `*Created:*` line, saying the same thing
-its filename says. **`main` for everything except memory work, which is
-developed on `memory-dev`** — `.cgitsync/`, the state area, the
-register/ledger, the `memory/` package, and the distant reference ledger.
-So a memory ticket is
-`.localSpec/DevTickets/openTickets/memory-dev_<priority>-<rank>_<Name>_DevPlanTicket.md`
-and everything else is `main_<priority>-<rank>_<Name>_DevPlanTicket.md`.
+its filename says. **`main` for everything except two workstreams**: memory
+work is developed on `memory-dev` — `.cgitsync/`, the state area, the
+register/ledger, the `memory/` package, and the distant reference ledger —
+and the data layer on `data-repo` — the `DataManager`, the DVC backend,
+`data_backend`/`data_paths`, and data materialisation and publication. So a
+memory ticket is
+`.localSpec/DevTickets/openTickets/memory-dev_<priority>-<rank>_<Name>_DevPlanTicket.md`,
+a data ticket `data-repo_<priority>-<rank>_<Name>_DevPlanTicket.md`, and
+everything else `main_<priority>-<rank>_<Name>_DevPlanTicket.md`.
 `.localSpec/AdditionalSpecs.md`'s *Branches and ticket topics* section is
 the authoritative list of which branches this project has;
 TICKETLIFECYCLE.md §2.3 and §3 define the two conventions themselves.
