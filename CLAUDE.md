@@ -115,8 +115,16 @@ Do all of these as part of the change, not as a follow-up:
    Deliver it as text in the finishing report; whether to commit is the
    owner's call unless the owner asks for it.
 
-   **One message. Plain English. Three lines at most.**
+   **Starts with `<project-name><version>`. One message. Plain English.
+   Three lines at most.**
 
+   - **Starts with `<project-name><version>`.** The project's own name —
+     `cgitsync` — immediately followed by `pyproject.toml`'s current
+     version, no space and no `v` (`cgitsync2.76`, never `cgitsync 2.76`
+     or `cgitsync v2.76`). Run `pixi run bump-version` (step 2 above)
+     before writing the message, so the version it reads is current. This
+     is what lets a reader scanning `git log` tell which release a change
+     shipped in without cross-referencing anything else.
    - **One message.** Write the *same* message for `commit` and for
      `commit --private`. One change is one story, and a project
      repository and the configuration repository that goes with it are
