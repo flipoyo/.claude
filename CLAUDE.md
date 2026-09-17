@@ -115,6 +115,16 @@ Do all of these as part of the change, not as a follow-up:
    Deliver it as text in the finishing report; whether to commit is the
    owner's call unless the owner asks for it.
 
+   **Never `push` without being asked, in any repository, on any
+   branch.** No ruleset on this remote stops an agent running under the
+   owner's own credentials — `main`'s `maintainerClearance` ruleset
+   bypasses Admin, always, and the account these commands run as has that
+   role. The only barrier is this rule. Commit locally, deliver the
+   message, and stop — `push` (or `memory push`, or anything that reaches
+   a remote) is a separate, explicit request every time, not something a
+   finished ticket implies. Approval to push once does not carry to the
+   next command, the next ticket, or the next session.
+
    **Starts with `<project-name><version>`. One message. Plain English.
    Three lines at most.**
 
