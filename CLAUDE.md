@@ -27,7 +27,7 @@ graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
     CLAUDE -->|deeper spec| SPEC[".localSpec/AdditionalSpecs.md"]
     CLAUDE -->|doc rules| STYLE[".agentSpec/DevSpec/DOCSTYLE.md"]
-    CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test"]
+    CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test<br/>&& cgitsync status shows errors=0"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
     class CLAUDE here;
@@ -91,8 +91,19 @@ separate `pip install -e .`.
 Do all of these as part of the change, not as a follow-up:
 
 1. **`pixi run lint` and `pixi run test` must both pass.** The full suite
-   must pass before any merge to main (`DevSpecs.md`, *Testing*).
-2. **Run `pixi run bump-version`** when wrapping up a feature branch, ahead
+   must pass before any merge to main, and before any task is considered
+   closed (`DevSpecs.md`, *Testing*).
+2. **`cgitsync status`, run from this tree's own root, must show
+   `errors=0`.** A green test suite proves the code works in isolation; it
+   does not prove `cgitsync` can still describe the tree it is actually
+   dogfooding itself against (`DevSpecs.md`, *Testing*). A row reading
+   `error`/`error` — a repository whose branch has no commit for `git
+   rev-parse HEAD` to resolve, most often — means a change left a real,
+   tracked repository in a state the tool cannot read, which no unit test
+   over a fixture would have caught. Fix the repository, or the code that
+   left it that way, before calling a task finished; do not just note the
+   error and move on.
+3. **Run `pixi run bump-version`** when wrapping up a feature branch, ahead
    of the auto-increment CI performs on merge to main (`DevSpecs.md`,
    *Versioning*; `.localSpec/AdditionalSpecs.md`). `pyproject.toml` holds the
    authoritative `YYYY.XX` version; the one command syncs `pixi.toml`,
@@ -100,16 +111,16 @@ Do all of these as part of the change, not as a follow-up:
    `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
    `docs/preamble.tex`. DevSpecs requires a single command for this —
    never hand-edit those version fields. `--dry-run` previews it.
-3. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
+4. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
    sources but does *not* regenerate the tracked PDFs:
    `cd docs && latexmk -pdf MASTER.tex` (plus each `c_*.tex` you touched).
-4. **Update `.localSpec/AdditionalSpecs.md`'s architecture section** if
+5. **Update `.localSpec/AdditionalSpecs.md`'s architecture section** if
    module responsibility moved (see below).
-5. **Document any new CLI command** in the README command table *and*
+6. **Document any new CLI command** in the README command table *and*
    `docs/Text/user_guide.tex`, and its client method in
    `docs/Text/api_python.tex`. The README half is enforced by
    `tests/unit/test_cli_smoke.py::test_readme_documents_every_cli_command`.
-6. **Deliver the commit message.** Finishing a ticket includes writing
+7. **Deliver the commit message.** Finishing a ticket includes writing
    the commit message for the repositories the change touched — the
    project's own and each mounted configuration repository that changed.
    Deliver it as text in the finishing report; whether to commit is the
@@ -131,7 +142,7 @@ Do all of these as part of the change, not as a follow-up:
    - **Starts with `<project-name><version>`.** The project's own name —
      `cgitsync` — immediately followed by `pyproject.toml`'s current
      version, no space and no `v` (`cgitsync2.76`, never `cgitsync 2.76`
-     or `cgitsync v2.76`). Run `pixi run bump-version` (step 2 above)
+     or `cgitsync v2.76`). Run `pixi run bump-version` (step 3 above)
      before writing the message, so the version it reads is current. This
      is what lets a reader scanning `git log` tell which release a change
      shipped in without cross-referencing anything else.
