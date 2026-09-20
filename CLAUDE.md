@@ -177,10 +177,44 @@ authorship. Publishing and the scientific world already draw this line:
 paid assistance is acknowledged, not co-signed. Co-authorship would be the
 right word for work given freely; it is the wrong word for work invoiced.
 
-The agent is named once, in [README.md](README.md)'s *LLM assistance*
-section, and nowhere else. Keep that section current — it is the whole
-of the credit, so it carries the honesty that the commit trailers would
-otherwise have carried.
+### Two rules, because naming an agent serves two different purposes
+
+Credit and accountability are not the same thing, and they do not belong
+in the same place. One is published; the other is nobody's business but
+the people doing the work.
+
+**The publication rule — public, and one place only.** The agent is named
+in [README.md](README.md)'s *LLM assistance* section, and in no other
+public place. Keep that section current: it is the whole of the credit,
+so it carries the honesty the commit trailers would otherwise have
+carried. It names the tools used on this project; it does not name who
+did which piece of work, because credit at that granularity is exactly
+the co-signature the section above refuses.
+
+**The accounting rule — private, and never published.** What each agent
+actually did belongs in `.cgitsync/.memory/.self-history`: which ticket
+was served, which agent and role acted, its vendor and model version, the
+States the work moved between, and how far the specs were followed. That
+is a record of work performed under contract, not a by-line — the same
+distinction that makes paid assistance acknowledged rather than
+co-signed, applied to the other half of the question.
+
+It stays private for the reason the whole planning surface is private:
+how the work is decided and who did which part is internal, while the
+product is public. `.memory` is `private = true`, it is pushed only to a
+private repository, and privacy propagates to everything nested inside
+it. **A self-history record must never reach a public repository**, and
+nothing in it may be copied into one.
+
+Neither rule licenses the other. Naming an agent in the accounting record
+is not permission to name it on a commit, and the README's credit is not
+a summary of the accounting.
+
+The **AgentReport** ticket in `.localSpec/DevTickets/` carries the
+record's fields and the conformity score it holds — cited by name, not by
+path, because a ticket is renamed when it is archived. Until it lands
+there is nothing to write: the publication rule above is in force today,
+the accounting rule says where the record will go.
 
 ## Architecture boundary
 
