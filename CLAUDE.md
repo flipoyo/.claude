@@ -47,7 +47,8 @@ This project uses Pixi, not bare `pip`/`venv`.
 pixi install         # create/update the environment (run after touching pixi.toml or dependencies)
 pixi run test        # pytest, tests/unit + tests/integration
 pixi run lint        # ruff check .
-pixi run bump-version  # bump YYYY.XX and sync every manifest and doc (see below)
+pixi run bump-version  # orchestrator: bump SemVer and sync every manifest and doc (see below)
+pixi run bump-build    # worker: bump the __build__ counter alone (see below)
 ```
 
 CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
@@ -93,7 +94,14 @@ Do all of these as part of the change, not as a follow-up:
 1. **`pixi run lint` and `pixi run test` must both pass.** The full suite
    must pass before any merge to main, and before any task is considered
    closed (`DevSpecs.md`, *Testing*).
-2. **`cgitsync status`, run from this tree's own root, must show
+2. **Run `pixi run bump-build` for any change under `src/`.** This is a
+   worker step, not a release step: it bumps only `__init__.py`'s
+   `__build__` counter, independently of the SemVer in step 4. It is not
+   automated (not by CI, not derived from git) on purpose — see
+   `.localSpec/AdditionalSpecs.md`, *Versioning*, *Who bumps what* — so a
+   change that touches `src/` and skips this step is visible in the diff
+   and costs conformity score when the work is quoted.
+3. **`cgitsync status`, run from this tree's own root, must show
    `errors=0`.** A green test suite proves the code works in isolation; it
    does not prove `cgitsync` can still describe the tree it is actually
    dogfooding itself against (`DevSpecs.md`, *Testing*). A row reading
@@ -103,24 +111,26 @@ Do all of these as part of the change, not as a follow-up:
    over a fixture would have caught. Fix the repository, or the code that
    left it that way, before calling a task finished; do not just note the
    error and move on.
-3. **Run `pixi run bump-version`** when wrapping up a feature branch, ahead
-   of the auto-increment CI performs on merge to main (`DevSpecs.md`,
-   *Versioning*; `.localSpec/AdditionalSpecs.md`). `pyproject.toml` holds the
-   authoritative `YYYY.XX` version; the one command syncs `pixi.toml`,
-   `src/ComplexGitSync/__init__.py`, the README title, and the
-   `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
+4. **Run `pixi run bump-version {major,minor,patch}`** when wrapping up a
+   feature branch — this is an orchestrator step, a judgement call about
+   what the change did to the public interface (`.localSpec/AdditionalSpecs.md`,
+   *Versioning*), not something CI ever does. `pyproject.toml` holds the
+   authoritative SemVer; the one command syncs `pixi.toml`,
+   `src/ComplexGitSync/__init__.py`'s `__version__`, the README title, and
+   the `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
    `docs/preamble.tex`. DevSpecs requires a single command for this —
-   never hand-edit those version fields. `--dry-run` previews it.
-4. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
+   never hand-edit those version fields. `--pre <stage>`/`--release` manage
+   a pre-release cycle; `--dry-run` previews any of it.
+5. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
    sources but does *not* regenerate the tracked PDFs:
    `cd docs && latexmk -pdf MASTER.tex` (plus each `c_*.tex` you touched).
-5. **Update `.localSpec/AdditionalSpecs.md`'s architecture section** if
+6. **Update `.localSpec/AdditionalSpecs.md`'s architecture section** if
    module responsibility moved (see below).
-6. **Document any new CLI command** in the README command table *and*
+7. **Document any new CLI command** in the README command table *and*
    `docs/Text/user_guide.tex`, and its client method in
    `docs/Text/api_python.tex`. The README half is enforced by
    `tests/unit/test_cli_smoke.py::test_readme_documents_every_cli_command`.
-7. **Deliver the commit message.** Finishing a ticket includes writing
+8. **Deliver the commit message.** Finishing a ticket includes writing
    the commit message for the repositories the change touched — the
    project's own and each mounted configuration repository that changed.
    Deliver it as text in the finishing report; whether to commit is the
@@ -141,8 +151,8 @@ Do all of these as part of the change, not as a follow-up:
 
    - **Starts with `<project-name><version>`.** The project's own name —
      `cgitsync` — immediately followed by `pyproject.toml`'s current
-     version, no space and no `v` (`cgitsync2.76`, never `cgitsync 2.76`
-     or `cgitsync v2.76`). Run `pixi run bump-version` (step 3 above)
+     version, no space and no `v` (`cgitsync3.1.0`, never `cgitsync 3.1.0`
+     or `cgitsync v3.1.0`). Run `pixi run bump-version` (step 4 above)
      before writing the message, so the version it reads is current. This
      is what lets a reader scanning `git log` tell which release a change
      shipped in without cross-referencing anything else.
