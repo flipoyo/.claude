@@ -8,10 +8,15 @@ checklist, and the architecture boundary.
 
 **Why it exists.** `pixi run lint`/`test`/`bump-version`, the module
 responsibility table, and the ring-import rules must be followed identically
-by every contributor; this file is the one place that states them.
+by every contributor; this file is the one place that states them. Rules
+any cgitsync project would want — the checklist shape, the commit-message
+rule, attribution — live in
+[.agentSpec/DevSpec/AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md)
+instead, so this file states only what is specific to ComplexGitSync.
 
 **What you will find.** The Pixi command set, how to bootstrap a
-live-editable checkout, a before-committing checklist, the module
+live-editable checkout, a before-committing checklist (this project's own
+commands, filling in the shape `AgentConduct.md` states), the module
 responsibility table and architecture boundary, file formats, repo layout,
 and document conventions.
 
@@ -27,6 +32,7 @@ graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
     CLAUDE -->|deeper spec| SPEC[".localSpec/AdditionalSpecs.md"]
     CLAUDE -->|doc rules| STYLE[".agentSpec/DevSpec/DOCSTYLE.md"]
+    CLAUDE -->|checklist shape, commit rule, credit| CONDUCT[".agentSpec/DevSpec/AgentConduct.md"]
     CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test<br/>&& cgitsync status shows errors=0"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
@@ -136,89 +142,41 @@ Do all of these as part of the change, not as a follow-up:
    Deliver it as text in the finishing report; whether to commit is the
    owner's call unless the owner asks for it.
 
-   **Never `push` without being asked, in any repository, on any
-   branch.** No ruleset on this remote stops an agent running under the
-   owner's own credentials — `main`'s `maintainerClearance` ruleset
-   bypasses Admin, always, and the account these commands run as has that
-   role. The only barrier is this rule. Commit locally, deliver the
-   message, and stop — `push` (or `memory push`, or anything that reaches
-   a remote) is a separate, explicit request every time, not something a
-   finished ticket implies. Approval to push once does not carry to the
-   next command, the next ticket, or the next session.
-
-   **Starts with `<project-name><version>`. One message. Plain English.
-   Three lines at most.**
-
-   - **Starts with `<project-name><version>`.** The project's own name —
-     `cgitsync` — immediately followed by `pyproject.toml`'s current
-     version, no space and no `v` (`cgitsync3.1.0`, never `cgitsync 3.1.0`
-     or `cgitsync v3.1.0`). Run `pixi run bump-version` (step 4 above)
-     before writing the message, so the version it reads is current. This
-     is what lets a reader scanning `git log` tell which release a change
-     shipped in without cross-referencing anything else.
-   - **One message.** Write the *same* message for `commit` and for
-     `commit --private`. One change is one story, and a project
-     repository and the configuration repository that goes with it are
-     two halves of that story, not two stories. Do not write a variant
-     per repository.
-   - **Plain English.** Say what the change does for the person using the
-     tool, in words they would use. This is a deliberate tightening of
-     [.agentSpec/DevSpec/DOCSTYLE.md](.agentSpec/DevSpec/DOCSTYLE.md)
-     §5, which exempts commit messages — here they are not exempt. The
-     reader is somebody scanning `git log` months later, not somebody
-     holding the diff.
-   - **Three lines at most.** The whole message, not three paragraphs and
-     not a subject line plus three. No bullet lists, no file inventories,
-     no ticket numbers: the diff already says which files moved, and the
-     archived ticket already says why.
-
-   This governs the messages you write. It says nothing about the
-   messages ComplexGitSync generates for itself, such as the
-   `--commit-gitignore` one.
+   The checklist shape (deliver, don't assume you should commit; never
+   push without being asked) and the commit-message rule in full —
+   `<project-name><version>`, one message, plain English, three lines —
+   are project-agnostic and live in
+   [AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md) §1/§2. This
+   project's own fill-ins: the project name is `cgitsync`, so a message
+   reads `cgitsync3.1.0` (run `pixi run bump-version`, step 4 above,
+   first, so the version it reads is current); write the same message for
+   `commit` and `commit --private`. `--commit-gitignore` and other
+   messages ComplexGitSync generates for itself are not governed by this
+   rule. On why "never push without being asked" cannot be delegated to
+   GitHub's own branch protection here specifically: `main`'s
+   `maintainerClearance` ruleset bypasses Admin, always, and the account
+   these commands run as has that role — the convention in AgentConduct.md
+   is the only barrier that actually holds.
 
 ## Attribution
 
-**The agent is not credited on commits.** No `Co-Authored-By` trailer and
-no "generated with" line on any commit, merge, or pull request, in any
-repository of this tree.
+The two rules — an agent is never credited on a commit; public credit and
+private accounting are separate and neither substitutes for the other —
+are project-agnostic and stated in full in
+[AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md) §3. This project's
+own fill-ins:
 
-Work done by an LLM agent under contract is a paid service, not
-authorship. Publishing and the scientific world already draw this line:
-paid assistance is acknowledged, not co-signed. Co-authorship would be the
-right word for work given freely; it is the wrong word for work invoiced.
-
-### Two rules, because naming an agent serves two different purposes
-
-Credit and accountability are not the same thing, and they do not belong
-in the same place. One is published; the other is nobody's business but
-the people doing the work.
-
-**The publication rule — public, and one place only.** The agent is named
-in [README.md](README.md)'s *LLM assistance* section, and in no other
-public place. Keep that section current: it is the whole of the credit,
-so it carries the honesty the commit trailers would otherwise have
-carried. It names the tools used on this project; it does not name who
-did which piece of work, because credit at that granularity is exactly
-the co-signature the section above refuses.
-
-**The accounting rule — private, and never published.** What each agent
-actually did belongs in `.cgitsync/.memory/.self-history`: which ticket
-was served, which agent and role acted, its vendor and model version, the
-States the work moved between, and how far the specs were followed. That
-is a record of work performed under contract, not a by-line — the same
-distinction that makes paid assistance acknowledged rather than
-co-signed, applied to the other half of the question.
-
-It stays private for the reason the whole planning surface is private:
-how the work is decided and who did which part is internal, while the
-product is public. `.memory` is `private = true`, it is pushed only to a
-private repository, and privacy propagates to everything nested inside
-it. **A self-history record must never reach a public repository**, and
-nothing in it may be copied into one.
-
-Neither rule licenses the other. Naming an agent in the accounting record
-is not permission to name it on a commit, and the README's credit is not
-a summary of the accounting.
+- **Publication rule.** The agent is named in [README.md](README.md)'s
+  *LLM assistance* section, and in no other public place. Keep that
+  section current.
+- **Accounting rule.** What each agent actually did belongs in
+  `.cgitsync/.memory/.self-history`: which ticket was served, which agent
+  and role acted, its vendor and model version, the States the work moved
+  between, and how far the specs were followed. `.memory` is
+  `private = true`, pushed only to a private repository, and privacy
+  propagates to everything nested inside it. **A self-history record must
+  never reach a public repository**, and nothing in it may be copied into
+  one.
 
 The **AgentReport** ticket in `.localSpec/DevTickets/` carries the
 record's fields and the conformity score it holds — cited by name, not by
@@ -335,7 +293,10 @@ identifiers.
   own `install.cgs`, which mounts `flipoyo/DevSpec` one level deeper at
   `.agentSpec/DevSpec/`: `DevSpecs.md` (the project-agnostic philosophy
   `.localSpec/AdditionalSpecs.md` and this file conform to), `DOCSTYLE.md`,
-  and a generic `AGENT.md` template.
+  `AgentConduct.md` (the checklist shape, commit-message rule, and
+  attribution rules this file's *Before committing* and *Attribution*
+  sections fill in with ComplexGitSync's own specifics), and a generic
+  `AGENT.md` template.
 - `.localSpec/DevTickets/` — **the planning surface, and it is private**;
   the public repository holds no tickets at all. Four things live there,
   and nothing else:
@@ -360,46 +321,26 @@ document in this repo is written — abstract first, mermaid graph, audience
 separation, length, one authoritative file per purpose. It applies to every
 `README.md`, spec, and file under `docs/`.
 
-Write in straightforward English, not IT-entangled sentences — favour
-common words over jargon, expand acronyms on first use, and keep sentences
-short enough to read once. This bar is strictest for `tutorials/`,
-`README.md`, and `docs/Text/*.tex`, since their reader has no other
-context to lean on; see DOCSTYLE.md §5 for the full rule, worked examples,
-and where it loosens.
+DOCSTYLE.md §5 already states the plain-English rule, its worked examples
+and where it loosens, and the finishing-report bar in full — including
+naming `tutorials/`, `README.md`, and `docs/Text/*.tex` as where it applies
+hardest, which happen to be exactly this project's own files for those
+roles. Nothing here restates it.
 
-**This includes the report you write when you finish a task**, and there
-the bar is strictest of all. Say what works now, what changed, what is
-unfinished, and what the reader must decide — in that order, in short
-sentences, naming files and commands rather than describing them. The
-reader has been away from the task and should not have to decode the
-summary to find out where things stand. DOCSTYLE.md §5 carries the full
-rule.
+Every created document opens with a `*Created: YYYY-MM-DD*` line, per
+`DevSpecs.md`'s *Document Conventions* section. This project's own files
+for that rule: specs (`.agentSpec/DevSpec/DevSpecs.md`,
+`.localSpec/AdditionalSpecs.md`), planning tickets (`DevPlan*.md`,
+`DevPlanTickets*.md`, `CorPlan.md`-style plans), `.localSpec/audit.md`,
+`README.md`, and `docs/tutorials/*.md`.
 
-Every created document — specs (`.agentSpec/DevSpec/DevSpecs.md`, `.localSpec/AdditionalSpecs.md`),
-planning tickets (`DevPlan*.md`, `DevPlanTickets*.md`, `CorPlan.md`-style
-plans), `.localSpec/audit.md`, `README.md`, and `docs/tutorials/*.md` — opens with a
-`*Created: YYYY-MM-DD*` line directly under its `# ` title, set once at
-authoring time and never rewritten on later edits. It records when the
-document was written, not when it was last touched: a "last updated" claim
-rots the moment someone forgets to bump it, which `.agentSpec/DevSpec/DOCSTYLE.md`
-§6 already forbids ("no stale-by-design content"); a creation date is a
-historical fact and cannot go stale the same way.
-
-Planning tickets additionally carry a filename lifecycle. An open ticket
-lives in `.localSpec/DevTickets/openTickets/` as
-`<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md`. `<branch>` is the
-branch the work lands on, always written out and `main` when nothing else
-applies; `<priority>` is `1` (prioritary — pick it up now) or `2`
-(stand-by — real work, not now); and `<rank>` is its position in that
-priority's own pile, counted from 1. A new ticket is appended to the end of
-its pile; a Ticket review re-ranks both piles by importance and compacts
-them so each runs 1..N. Once the ticket's work is implemented, the
-`<branch>_<priority>-<rank>_` prefixes are replaced by a `YYYYMMDD_` stamp
-and the file moves to `.localSpec/DevTickets/archive/`, in the same commit
-that implements it.
+Planning tickets additionally carry a filename lifecycle —
 [.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
-authoritative statement of that rule — read it before opening or finishing
-a ticket.
+authoritative statement of that rule in full; read it before opening or
+finishing a ticket. This project's tickets live in
+`.localSpec/DevTickets/openTickets/` (open) and
+`.localSpec/DevTickets/archive/` (implemented), named
+`<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md`.
 
 Every ticket also states the branch its work lands on, as a
 `*Branch: <name>*` line under its `*Created:*` line, saying the same thing

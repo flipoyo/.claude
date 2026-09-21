@@ -21,8 +21,10 @@ rules of its own.
    `*_DevPlanTicket.md` work, and `archive/` for closed ones.
 3. [`DevSpecs.md`](.agentSpec/DevSpec/DevSpecs.md) — the underlying,
    project-agnostic philosophy all of the above conforms to. It lives, with
-   `DOCSTYLE.md` and the generic `AGENT.md` template, in `flipoyo/DevSpec`,
-   which the mounted `flipoyo/.agentSpec` repository mounts one level deeper
-   (neither is tracked by this repo — see `.gitignore`), the same way `docs/`
-   holds `DocSpecs.md`. `.agentSpec/TICKETLIFECYCLE.md` sits in the outer
-   one.
+   `DOCSTYLE.md`, [`AgentConduct.md`](.agentSpec/DevSpec/AgentConduct.md) —
+   the checklist shape, commit-message rule, and attribution every
+   conforming project shares — and the generic `AGENT.md` template, in
+   `flipoyo/DevSpec`, which the mounted `flipoyo/.agentSpec` repository
+   mounts one level deeper (neither is tracked by this repo — see
+   `.gitignore`), the same way `docs/` holds `DocSpecs.md`.
+   `.agentSpec/TICKETLIFECYCLE.md` sits in the outer one.
