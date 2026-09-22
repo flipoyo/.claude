@@ -11,7 +11,7 @@ responsibility table, and the ring-import rules must be followed identically
 by every contributor; this file is the one place that states them. Rules
 any cgitsync project would want — the checklist shape, the commit-message
 rule, attribution — live in
-[.agentSpec/DevSpec/AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md)
+[.agent/.distant/dev-sync/AgentConduct.md](../../.distant/dev-sync/AgentConduct.md)
 instead, so this file states only what is specific to ComplexGitSync.
 
 **What you will find.** The Pixi command set, how to bootstrap a
@@ -21,7 +21,8 @@ responsibility table and architecture boundary, file formats, repo layout,
 and document conventions.
 
 **Who it is for.** Anyone changing code or docs in this repo. End users only
-need [README.md](README.md); this file is for development, not usage.
+need [README.md](../../../README.md); this file is for development, not
+usage.
 
 **What you need to do with it.** Follow it as written — it overrides default
 behavior — before making any change, and run its before-committing checklist
@@ -30,9 +31,9 @@ before every commit.
 ```mermaid
 graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
-    CLAUDE -->|deeper spec| SPEC[".localSpec/AdditionalSpecs.md"]
-    CLAUDE -->|doc rules| STYLE[".agentSpec/DevSpec/DOCSTYLE.md"]
-    CLAUDE -->|checklist shape, commit rule, credit| CONDUCT[".agentSpec/DevSpec/AgentConduct.md"]
+    CLAUDE -->|deeper spec| SPEC[".agent/.local/.localSpec/AdditionalSpecs.md"]
+    CLAUDE -->|doc rules| STYLE[".agent/.distant/documentation/DOCSTYLE.md"]
+    CLAUDE -->|checklist shape, commit rule, credit| CONDUCT[".agent/.distant/dev-sync/AgentConduct.md"]
     CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test<br/>&& cgitsync status shows errors=0"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
@@ -63,8 +64,8 @@ CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
 ### Bootstrapping a working checkout
 
 ComplexGitSync manages itself as a multi-repo tree: a fresh `git clone`
-alone gets you the code but not `docs/`, `.agentSpec/`, `.localSpec/`, or
-`.claude/`. Use `bootstrap` pointed at **`examples/complexgitsync4dev.cgs`**
+alone gets you the code but not `docs/` or any of the agentic mounts under
+`.agent/`. Use `bootstrap` pointed at **`examples/complexgitsync4dev.cgs`**
 — the developer spec — to get a fully populated, independently
 live-editable checkout. (The root `install.cgs` is the *user* install: the
 tool and its documentation only. Bootstrapping that one leaves you without
@@ -85,8 +86,11 @@ pixi install        # bootstrap clones a plain checkout, so it needs its own
 ```
 
 `$CGSHOME` now holds `ComplexGitSync` (mounted at its own root — the tree's
-project entry), `docs/` (`DocComplexGitSync`), `.agentSpec/`, `.localSpec/`,
-and `.claude/` cloned side by side. `pixi.toml`'s
+project entry), `docs/` (`DocComplexGitSync`), and every agentic mount under
+`.agent/.distant/` (`ticket`, `dev-sync`, `documentation` — shared,
+read-only) and `.agent/.local/` (`.localSpec`, `.claude`, and this
+project's own `cgitsync-dev`/`release`/`dogfooding` — ours to write) cloned
+side by side. `pixi.toml`'s
 `complexgitsync = { path = ".", editable = true }` makes
 this checkout self-editable the moment that second `pixi install` finishes:
 edit any file under `src/ComplexGitSync/`, then `pixi run cgitsync ...` from
@@ -104,7 +108,8 @@ Do all of these as part of the change, not as a follow-up:
    worker step, not a release step: it bumps only `__init__.py`'s
    `__build__` counter, independently of the SemVer in step 4. It is not
    automated (not by CI, not derived from git) on purpose — see
-   `.localSpec/AdditionalSpecs.md`, *Versioning*, *Who bumps what* — so a
+   `.agent/.local/.localSpec/AdditionalSpecs.md`, *Versioning*, *Who bumps
+   what* — so a
    change that touches `src/` and skips this step is visible in the diff
    and costs conformity score when the work is quoted.
 3. **`cgitsync status`, run from this tree's own root, must show
@@ -119,8 +124,9 @@ Do all of these as part of the change, not as a follow-up:
    error and move on.
 4. **Run `pixi run bump-version {major,minor,patch}`** when wrapping up a
    feature branch — this is an orchestrator step, a judgement call about
-   what the change did to the public interface (`.localSpec/AdditionalSpecs.md`,
-   *Versioning*), not something CI ever does. `pyproject.toml` holds the
+   what the change did to the public interface
+   (`.agent/.local/.localSpec/AdditionalSpecs.md`, *Versioning*), not
+   something CI ever does. `pyproject.toml` holds the
    authoritative SemVer; the one command syncs `pixi.toml`,
    `src/ComplexGitSync/__init__.py`'s `__version__`, the README title, and
    the `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
@@ -130,8 +136,8 @@ Do all of these as part of the change, not as a follow-up:
 5. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
    sources but does *not* regenerate the tracked PDFs:
    `cd docs && latexmk -pdf MASTER.tex` (plus each `c_*.tex` you touched).
-6. **Update `.localSpec/AdditionalSpecs.md`'s architecture section** if
-   module responsibility moved (see below).
+6. **Update `.agent/.local/.localSpec/AdditionalSpecs.md`'s architecture
+   section** if module responsibility moved (see below).
 7. **Document any new CLI command** in the README command table *and*
    `docs/Text/user_guide.tex`, and its client method in
    `docs/Text/api_python.tex`. The README half is enforced by
@@ -146,7 +152,7 @@ Do all of these as part of the change, not as a follow-up:
    push without being asked) and the commit-message rule in full —
    `<project-name><version>`, one message, plain English, three lines —
    are project-agnostic and live in
-   [AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md) §1/§2. This
+   [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1/§2. This
    project's own fill-ins: the project name is `cgitsync`, so a message
    reads `cgitsync3.1.0` (run `pixi run bump-version`, step 4 above,
    first, so the version it reads is current); write the same message for
@@ -163,12 +169,12 @@ Do all of these as part of the change, not as a follow-up:
 The two rules — an agent is never credited on a commit; public credit and
 private accounting are separate and neither substitutes for the other —
 are project-agnostic and stated in full in
-[AgentConduct.md](.agentSpec/DevSpec/AgentConduct.md) §3. This project's
-own fill-ins:
+[AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §3. This
+project's own fill-ins:
 
-- **Publication rule.** The agent is named in [README.md](README.md)'s
-  *LLM assistance* section, and in no other public place. Keep that
-  section current.
+- **Publication rule.** The agent is named in
+  [README.md](../../../README.md)'s *LLM assistance* section, and in no
+  other public place. Keep that section current.
 - **Accounting rule.** What each agent actually did belongs in
   `.cgitsync/.memory/.self-history`: which ticket was served, which agent
   and role acted, its vendor and model version, the States the work moved
@@ -178,7 +184,7 @@ own fill-ins:
   never reach a public repository**, and nothing in it may be copied into
   one.
 
-The **AgentReport** ticket in `.localSpec/DevTickets/` carries the
+The **AgentReport** ticket in `.agent/.local/.localSpec/DevTickets/` carries the
 record's fields and the conformity score it holds — cited by name, not by
 path, because a ticket is renamed when it is archived. Until it lands
 there is nothing to write: the publication rule above is in force today,
@@ -187,12 +193,12 @@ the accounting rule says where the record will go.
 ## Architecture boundary
 
 The module responsibilities are strict and audited — see
-[.localSpec/AdditionalSpecs.md](.localSpec/AdditionalSpecs.md)'s
+[.agent/.local/.localSpec/AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md)'s
 "Architectural Overview" section for the full write-up, including the
 "Ring" vocabulary (`Ring-0`…`Ring-4`, an import-direction/I/O-boundary
 grouping) the table below already uses. Summary:
 
-Update `.localSpec/AdditionalSpecs.md`'s responsibility table and
+Update `.agent/.local/.localSpec/AdditionalSpecs.md`'s responsibility table and
 dependency-path diagram whenever a task adds, removes, or moves module
 responsibility (new module, changed delegation, changed boundary) — before
 committing, as part of that task's change, not as a separate follow-up.
@@ -205,13 +211,13 @@ committing, as part of that task's change, not as a separate follow-up.
 | `git_branch.py` | The only implementation of the `.cgs` branch fallback chain (`fallback_branch` → `default_branch` → `project.default_branch` → `DEFAULT_BRANCH`) and of the privacy rule — including the private/local naming rule (`private_local_branch`): `<project name>` on `main`, `<project name>_<branch>` otherwise. Its separator constant never leaves this module. Also owns the closed-branch naming rule: `closed_branch_name` (`closed/<branch>`, a `/` that can never collide with `private_local_branch`'s `_`) and `closeable` (false for the project's own default branch). Ring 0 — pure, offline; a resolver, not a registry: it holds no tree and no privacy state (`git_tree_branch.py` holds the tree's branch state and asks this module for every rule). Do not write a second copy of that chain anywhere. |
 | `git_tree_branch.py` | The tree's branch *state*, where `git_branch.py` owns the *rule*: which branch the tree is on (the root's — printed by `status` as `cgitsync_branch`), which branch each repository targets when the tree moves, which branch it is actually on, and where those two disagree. Also owns `tree_project_name`. It restates no rule — every answer comes from `git_branch.py` — and it is the only place that reads the root's branch to speak for the tree. An instance caches what Git said, so build a new one after a checkout or a pull. |
 | `git_tree.py` | Tree structures (`GitTree`/`WorkingGitTree`), traversal, lifecycle state; `to_cgs()` only delegates to `cgs_format.py`. Also maintains `.gitignore` across the tree (`sync_gitignore`) — filesystem-only, no Git/subprocess. Owns privacy state: `propagate_privacy` makes a parent's `private`/`writable` cover everything nested inside it. |
-| `gts_document.py` | `.gts` runtime state-snapshot parsing/validation; the one canonical content-hash builder. That hash **names the State** (`.cgitsync/state/<hash>.gts`), so it holds only what the workspace *is*: tree-relative paths, refs, commits, who each repository is. No absolute path, no `source_cgs_path`, no toolchain version — those say where a tree was materialised or what observed it, and hashing them gave one tree two names on two machines. `document.hash_canonicalisation` says which algorithm measured a document; a snapshot is always checked with the version it declares and is never silently re-measured. A document declaring a version higher than this build knows is refused by name (`UnsupportedSnapshotFormatError`) before any hash is computed — never recomputed under today's rules and reported as a false mismatch. See `.localSpec/AdditionalSpecs.md`, *What a State's name is computed from*. |
+| `gts_document.py` | `.gts` runtime state-snapshot parsing/validation; the one canonical content-hash builder. That hash **names the State** (`.cgitsync/state/<hash>.gts`), so it holds only what the workspace *is*: tree-relative paths, refs, commits, who each repository is. No absolute path, no `source_cgs_path`, no toolchain version — those say where a tree was materialised or what observed it, and hashing them gave one tree two names on two machines. `document.hash_canonicalisation` says which algorithm measured a document; a snapshot is always checked with the version it declares and is never silently re-measured. A document declaring a version higher than this build knows is refused by name (`UnsupportedSnapshotFormatError`) before any hash is computed — never recomputed under today's rules and reported as a false mismatch. See `.agent/.local/.localSpec/AdditionalSpecs.md`, *What a State's name is computed from*. |
 | `git_runner.py` | Git subprocess wrapper — the sole `import subprocess` module, and the sole owner of how Git's output is decoded (`errors="replace"` at both wrappers; `_query_bytes` for callers that must search raw bytes) and of the environment Git runs in: `_non_interactive_git_env()` stops Git prompting for credentials *and* pins its message locale to English, because this project reads Git's prose and a translated message costs a non-English user the `--force-protocol` hint. Every question goes through `_query`/`_query_bytes`, so neither policy can be bypassed. `merge`/`fetch`/`mergetool` are operations; `can_merge_cleanly`/`branch_known`/`configured_merge_tool` are read-only questions that never touch a worktree, which is what lets a preflight ask about every repo before acting on any. `can_merge_cleanly` returns the conflicting paths, not a verdict, and counts a binary conflict — which prints no marker and is named on stderr — as a conflict. |
 | `clone_guard.py` | Whether a directory `initialise` is about to delete and re-clone holds work that exists nowhere else: a dirty worktree, or commits no remote has. Read-only and worktree-free, so `orchestre.py` can ask about every pending repository before deleting any — a refusal leaves the whole tree on disk. Asks "which commits does no remote hold?", not "is this branch ahead of its upstream", so a detached `HEAD` on a pinned submodule commit does not block. Says nothing about whether a mount point is owned outright. |
 | `operations.py` | Leaf/parent-first Git operations over a `WorkingGitTree` + `GitRunner`. Preflight checks only the repositories the operation's `RepoScope` selects, and measures a private repo against its own declared branch. `merge_tree` checks the whole scope before merging any of it, so a conflict anywhere leaves nothing merged; `merge_tree_one_at_a_time` (`merge --resolve`) gives that up on purpose, stopping at the first conflict so a merge tool has a conflicted worktree to open. `merge_status` is the single place a repository's fate is decided, so the dry run and the merge cannot disagree. `add_tree`/`commit_tree`/`push_tree`/`remove_paths` return one `RepoOutcome` per repository visited — what changed, or why nothing did — so "nothing happened" is reportable rather than silent. `remove_paths` is the one scoped operation given its paths instead of sweeping for them, so its scope is a *filter*: a path owned by a repository outside the scope is refused by name, and nothing is removed anywhere. `close_branch` renames a branch to `git_branch.closed_branch_name`'s name, tree-wide leaf-first, never deletes, and refuses before touching any repository when the branch is the project's own default or any repository in scope is currently checked out on it. |
 | `registry.py` | Translates `.cgs`/`.gts` documents to/from `WorkingGitTree`. **The `.gts` prevails over the `.cgs`** — a snapshot is the attested state, and a hand-edited `.cgs` must never be able to widen write access behind it. |
 | `settings.py` | Where workspaces live (`$CGSPATH`, else `$HOME/.cgs`), the default workspace a command falls back to when discovery finds nothing — created once, recorded in `$HOME/.cgs/default`, holding an empty but valid `.gts` that never claims to be `READY` — the other workspaces the CLI offers as a hint, and the `STANDALONE`/`NESTED` use case, derived from whether the running installation sits inside the resolved CGSHOME. Answers all of it before a workspace is open, which `master.py` cannot. |
-| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`.localSpec/DevTickets/archive/20260828_Isolation_DevPlanTicket.md`). `snapshot_resolver.py`'s `describe_*` functions also carry *which input* chose the workspace (`--search-dir` > `$CGSHOME` > current directory) so `cli/` can print it and warn when the resolved CGSHOME does not contain the current directory; the module itself never prints. |
+| `paths.py`, `state_store.py`, `discovery.py`, `status_render.py`, `snapshot_resolver.py` | Path/CGSHOME resolution, state-directory allocation, nested-config/`.gitmodules` discovery, pure status-table rendering (including the `SCOPE` column's user-facing wording: `project` / `private/local` / `private/distant` for project / private+writable / private read-only), and default-`.gts`-snapshot resolution — each extracted from `orchestre.py`/`cli/` during the isolation work (`.agent/.local/.localSpec/DevTickets/archive/20260828_Isolation_DevPlanTicket.md`). `snapshot_resolver.py`'s `describe_*` functions also carry *which input* chose the workspace (`--search-dir` > `$CGSHOME` > current directory) so `cli/` can print it and warn when the resolved CGSHOME does not contain the current directory; the module itself never prints. |
 | `universal_clock.py` | The sole reader of the real wall clock, high-resolution counter, PID and entropy source anywhere in `src/`. Defines `ClockProtocol` — the injectable interface every dated fact this project writes goes through — and `SystemClock`, the one real implementation. Every other module accepts a `clock: ClockProtocol` rather than reading `datetime`/`time`/`os`/`secrets` itself, checked unconditionally by `pixi run check-ceilings` the same way `subprocess` confinement is. `memory/ledger_entry.py` (Ring 0) keeps a structurally identical `ClockProtocol` of its own rather than importing this (Ring 1) module's — Ring 0 must be self-contained — and Python's structural typing makes the two interchangeable at every call site regardless. |
 | `memory/` | Everything a workspace remembers, including `repository.py`: what it takes for a memory to *be* a repository — the `.cgs` entry mounting it at `.cgitsync`, which branch of the shared `.memory` repository this project uses, the message its own commit carries — while still running no Git itself. A State records exactly one machine path, the tree's own root; everything else is written against the tree as `$CGSTREE/...`, because a memory gets pushed. The rest of the package: States (`states.py`), content-addressed Environment records (`environment.py`), the hash-chained ledger (`ledger_entry.py`, `ledger_store.py`), commit/publish evidence (`commit_log.py`), verification (`integrity.py`), and the legacy register reader (`store.py`). Every command that writes a State appends an entry carrying its toolchain and Environment reference. **Nothing here runs Git.** |
 | `toolchain.py` | The five version strings a ledger entry records, read at most once per process and reported as `none` when a tool is not installed. Asks `git_runner.tool_version`, so no second module imports `subprocess`. Versions are provenance, never identity: they never enter a State's name. |
@@ -222,10 +228,10 @@ committing, as part of that task's change, not as a separate follow-up.
 | `json_render.py` | The shape of every machine-readable answer (`status --json`, `verify --json`, and the error object a JSON-capable command prints when it fails), plus `SCHEMA_VERSION` and the serialiser. Defined once for all commands, never in `cli/`. Kept apart from `status_render.py` because a table column may be reworded and a JSON field may not — something is parsing it. Additive only: fields may be added, never repurposed or removed. |
 | `cli/` | Argument/prompt collection only, including `exit_codes.py`; delegates all semantics downstream. `_shared.py` holds cross-command helpers; `minimalist.py`, `expert.py`, `configuration.py`, and `environment.py` own command groups; `suggest.py` offers typo hints without rewriting arguments; `__init__.py` assembles the parser. |
 
-See [.localSpec/AdditionalSpecs.md](.localSpec/AdditionalSpecs.md) for the
+See [.agent/.local/.localSpec/AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md) for the
 full module/ring table and its ring-import rules (downward-only imports,
 `subprocess` confinement, Ring-0 purity, the ceiling ratchet) this boundary
-is checked against; [.localSpec/audit.md](.localSpec/audit.md) tracks actual
+is checked against; [.agent/.local/.localSpec/audit.md](../.localSpec/audit.md) tracks actual
 audit findings, not the architecture reference itself.
 
 Data flow: `CLI / Python caller → ComplexGitSyncClient.configure() → cgs_format.py → CgsDocument → GitTree → orchestre.py → registry.py / operations.py → GitRepo / git_runner.py`.
@@ -264,9 +270,9 @@ identifiers.
   It mounts no private repository, and `nested_config` on `docs` is
   `disabled` so `docs/DocCGS.cgs` does not pull in `DocSpec`.
 - `examples/complexgitsync4dev.cgs` — the **developer** install: the same
-  two repositories plus `.agentSpec`, `.localSpec`, `.claude`, and — since
-  `memory-dev_1-2_MemoryOnboarding`, 2026-09-17 — `.memory`, mounted at
-  `.cgitsync`, this project's own pushed memory. This is what makes
+  two repositories plus every agentic mount under `.agent/` (below), and —
+  since `memory-dev_1-2_MemoryOnboarding`, 2026-09-17 — `.memory`, mounted
+  at `.cgitsync`, this project's own pushed memory. This is what makes
   ComplexGitSync manage its own working tree, and what *Bootstrapping a
   working checkout* above uses. It is also `tutorials/04_private_repos.md`'s
   worked example and what CI dogfoods, being the only checked-in spec that
@@ -277,30 +283,45 @@ identifiers.
   is CGSHOME resolved from `--output-path`/`$CGSHOME` plus `project.name`.
 - `docs/` — LaTeX-built reference docs; generated `.aux`/`.log`/etc. are gitignored, the built PDFs are tracked.
 - `CLAUDE.md` (this file) and `AGENT.md` — tracked at the project root only
-  as symbolic links into `.claude/`, a mount of `flipoyo/claude` (branch
-  `ComplexGitSync`) holding the real files plus `settings.json`. `AGENT.md`
-  is a minimal pointer stating the reading order (this file, then
-  `.localSpec/` and `.agentSpec/`); it carries no rules of its own.
-- `.localSpec/` — a mount of `flipoyo/.localSpec` (branch `ComplexGitSync`):
-  `AdditionalSpecs.md` (deeper spec/authoring reference beyond this file),
-  `AGENT.md` (the roster of specialized agent roles for parallel multi-agent
-  work on this project — Dev, CI/CD, Editing, Orchestration, Maths,
-  Scientific editing — and how they hand off work), `audit.md`
-  (findings, legacy references, open decisions/risks), and `DevTickets/`
-  (the planning surface — see the next bullet).
-- `.agentSpec/` — a mount of `flipoyo/.agentSpec` (branch `main`, shared
-  across every project that uses it), holding `TICKETLIFECYCLE.md` and its
-  own `install.cgs`, which mounts `flipoyo/DevSpec` one level deeper at
-  `.agentSpec/DevSpec/`: `DevSpecs.md` (the project-agnostic philosophy
-  `.localSpec/AdditionalSpecs.md` and this file conform to), `DOCSTYLE.md`,
-  `AgentConduct.md` (the checklist shape, commit-message rule, and
-  attribution rules this file's *Before committing* and *Attribution*
-  sections fill in with ComplexGitSync's own specifics), and a generic
-  `AGENT.md` template.
-- `.localSpec/DevTickets/` — **the planning surface, and it is private**;
-  the public repository holds no tickets at all. Four things live there,
-  and nothing else:
-  [`README.md`](.localSpec/DevTickets/README.md) (the loop below, in full),
+  as symbolic links into `.agent/.local/.claude/`, a mount of
+  `flipoyo/.claude` (branch `ComplexGitSync`) holding the real files plus
+  `settings.json`. `AGENT.md` is a minimal pointer stating the reading
+  order (this file, then `.agent/.local/.localSpec/` and
+  `.agent/.distant/`); it carries no rules of its own.
+- `.agent/` — a plain directory, never itself a mounted repository
+  (`ProjectSpecSplit` WP2 tried that and it broke: `propagate_privacy` caps
+  a nested repository's writability at its parent's, and there is no
+  writable/distant parent that both a local and a distant child could
+  share). Every agentic repository below nests inside it purely through its
+  own `relative_path`, split into two halves so the path itself answers
+  "may I edit this?":
+  - `.agent/.local/` — **ours to write.** `.localSpec/` (a mount of
+    `flipoyo/.localSpec`, branch `ComplexGitSync`): `AdditionalSpecs.md`
+    (deeper spec/authoring reference beyond this file), `AGENT.md` (the
+    roster of specialized agent roles for parallel multi-agent work on this
+    project — Dev, CI/CD, Editing, Orchestration, Maths, Scientific editing
+    — and how they hand off work), `audit.md` (findings, legacy references,
+    open decisions/risks), and `DevTickets/` (the planning surface — see
+    the next bullet). `.claude/` (above). Also `cgitsync-dev/`, `release/`
+    and `dogfooding/` — this project's own remaining private mounts,
+    dispatched from what used to be sections of `CLAUDE.md` and
+    `AdditionalSpecs.md`.
+  - `.agent/.distant/` — **shared, read-only** across every project that
+    conforms to `DevSpec`. `ticket/` (a mount of `flipoyo/.ticketing`,
+    branch `main`): `TICKETLIFECYCLE.md`. `dev-sync/` (a mount of
+    `flipoyo/DevSpec`, branch `main`): `DevSpecs.md` (the project-agnostic
+    philosophy `.agent/.local/.localSpec/AdditionalSpecs.md` and this file
+    conform to), `AgentConduct.md` (the checklist shape, commit-message
+    rule, and attribution rules this file's *Before committing* and
+    *Attribution* sections fill in with ComplexGitSync's own specifics),
+    and a generic `AGENT.md` template. `documentation/` (a mount of
+    `flipoyo/DocSpec`, branch `main`): `DOCSTYLE.md`. `.agentSpec` itself —
+    the single repository these three used to nest inside, `DevSpec`
+    included — is no longer mounted by this project at all.
+- `.agent/.local/.localSpec/DevTickets/` — **the planning surface, and it
+  is private**; the public repository holds no tickets at all. Four things
+  live there, and nothing else:
+  [`README.md`](../.localSpec/DevTickets/README.md) (the loop below, in full),
   `shortTickets/` (the owner's requests, in their own words),
   `openTickets/` (the ranked plans, each named
   `<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md` — `main_` for
@@ -316,7 +337,7 @@ identifiers.
 
 ## Document conventions
 
-Follow [.agentSpec/DevSpec/DOCSTYLE.md](.agentSpec/DevSpec/DOCSTYLE.md) for how any Markdown
+Follow [.agent/.distant/documentation/DOCSTYLE.md](../../.distant/documentation/DOCSTYLE.md) for how any Markdown
 document in this repo is written — abstract first, mermaid graph, audience
 separation, length, one authoritative file per purpose. It applies to every
 `README.md`, spec, and file under `docs/`.
@@ -329,17 +350,17 @@ roles. Nothing here restates it.
 
 Every created document opens with a `*Created: YYYY-MM-DD*` line, per
 `DevSpecs.md`'s *Document Conventions* section. This project's own files
-for that rule: specs (`.agentSpec/DevSpec/DevSpecs.md`,
-`.localSpec/AdditionalSpecs.md`), planning tickets (`DevPlan*.md`,
-`DevPlanTickets*.md`, `CorPlan.md`-style plans), `.localSpec/audit.md`,
-`README.md`, and `docs/tutorials/*.md`.
+for that rule: specs (`.agent/.distant/dev-sync/DevSpecs.md`,
+`.agent/.local/.localSpec/AdditionalSpecs.md`), planning tickets
+(`DevPlan*.md`, `DevPlanTickets*.md`, `CorPlan.md`-style plans),
+`.agent/.local/.localSpec/audit.md`, `README.md`, and `docs/tutorials/*.md`.
 
 Planning tickets additionally carry a filename lifecycle —
-[.agentSpec/TICKETLIFECYCLE.md](.agentSpec/TICKETLIFECYCLE.md) is the
+[.agent/.distant/ticket/TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md) is the
 authoritative statement of that rule in full; read it before opening or
 finishing a ticket. This project's tickets live in
-`.localSpec/DevTickets/openTickets/` (open) and
-`.localSpec/DevTickets/archive/` (implemented), named
+`.agent/.local/.localSpec/DevTickets/openTickets/` (open) and
+`.agent/.local/.localSpec/DevTickets/archive/` (implemented), named
 `<branch>_<priority>-<rank>_<Name>_DevPlanTicket.md`.
 
 Every ticket also states the branch its work lands on, as a
@@ -350,11 +371,11 @@ register/ledger, the `memory/` package, and the distant reference ledger —
 and the data layer on `data-repo` — the `DataManager`, the DVC backend,
 `data_backend`/`data_paths`, and data materialisation and publication. So a
 memory ticket is
-`.localSpec/DevTickets/openTickets/memory-dev_<priority>-<rank>_<Name>_DevPlanTicket.md`,
+`.agent/.local/.localSpec/DevTickets/openTickets/memory-dev_<priority>-<rank>_<Name>_DevPlanTicket.md`,
 a data ticket `data-repo_<priority>-<rank>_<Name>_DevPlanTicket.md`, and
 everything else `main_<priority>-<rank>_<Name>_DevPlanTicket.md`.
-`.localSpec/AdditionalSpecs.md`'s *Branches and ticket topics* section is
-the authoritative list of which branches this project has;
+`.agent/.local/.localSpec/AdditionalSpecs.md`'s *Branches and ticket
+topics* section is the authoritative list of which branches this project has;
 TICKETLIFECYCLE.md §2.3 and §3 define the two conventions themselves.
 
 Standalone LaTeX documents (`docs/*.tex` with their own `\documentclass`)
