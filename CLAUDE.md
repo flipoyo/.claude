@@ -184,17 +184,27 @@ already and does not need a second orchestrator to quote it.
 ## Whose data this is
 
 [AgentDataContract.md](../../.distant/dev-sync/AgentDataContract.md) states
-the claim in full, and — read this part first — exactly what a document
-like it can and cannot deliver on its own: every record and every piece of
-data linked to this project belongs to its owner, and an agentProvider may
-use it only to develop this project. This project has not yet turned that
-claim into the content-addressed, dated record its own §3 describes — that
-needs the owner to supply which provider and which terms reference to pin
-(see the **AgentContract** ticket in
-`.agent/.local/.localSpec/DevTickets/`, cited by name since a ticket is
-renamed when archived). Until it exists, there is nothing for a
-`.self-history` record to cite, and that absence is itself the honest
-state of things, not an error to paper over.
+the owner's intent in full, and — read this part first — exactly what a
+document like it can and cannot deliver on its own: the owner intends
+every record and every piece of data linked to this project to stay
+theirs, and an agentProvider to use it only to develop this project —
+conditional on that provider's actual terms permitting it (§1), which
+[legalTerms/anthropic.md](../../.distant/dev-sync/legalTerms/anthropic.md)
+(§3) checks rather than assumes: **partial** — permits the intent only
+with training opt-out enabled and outside the Feedback/safety-review
+carve-outs, for the consumer-subscription access path this project runs
+under today.
+
+The signed record citing that assessment lives at
+`.agent/.distant/dev-sync/agent-contracts/`
+(`ComplexGitSync.memory.agent_contract`), one per provider, with a
+`current` pointer naming the one in force; `freeze_release()` reads it and
+names its terms version on the release row as `artefact:agent_contract`
+(absent, not fatal, when nothing is signed — see the **AgentContract**
+ticket in `.agent/.local/.localSpec/DevTickets/`, cited by name since a
+ticket is renamed when archived). `.self-history` citing a contract by
+hash is still pending: it needs the **AgentReport** ticket's record to
+exist first.
 
 ## Attribution
 
