@@ -10,13 +10,14 @@ checklist, and the architecture boundary.
 responsibility table, and the ring-import rules must be followed identically
 by every contributor; this file is the one place that states them. Rules
 any cgitsync project would want — the checklist shape, the commit-message
-rule, attribution — live in
+rule, the pair rule, attribution — live in
 [.agent/.distant/dev-sync/AgentConduct.md](../../.distant/dev-sync/AgentConduct.md)
 instead, so this file states only what is specific to ComplexGitSync.
 
 **What you will find.** The Pixi command set, how to bootstrap a
 live-editable checkout, a before-committing checklist (this project's own
-commands, filling in the shape `AgentConduct.md` states), the module
+commands, filling in the shape `AgentConduct.md` states), this project's
+fill-ins for the pair rule and the data contract, the module
 responsibility table and architecture boundary, file formats, repo layout,
 and document conventions.
 
@@ -33,7 +34,7 @@ graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
     CLAUDE -->|deeper spec| SPEC[".agent/.local/.localSpec/AdditionalSpecs.md"]
     CLAUDE -->|doc rules| STYLE[".agent/.distant/documentation/DOCSTYLE.md"]
-    CLAUDE -->|checklist shape, commit rule, credit| CONDUCT[".agent/.distant/dev-sync/AgentConduct.md"]
+    CLAUDE -->|checklist shape, commit rule, pair rule, credit| CONDUCT[".agent/.distant/dev-sync/AgentConduct.md"]
     CLAUDE -->|gate before commit| CI["pixi run lint && pixi run test<br/>&& cgitsync status shows errors=0"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
@@ -163,6 +164,37 @@ Do all of these as part of the change, not as a follow-up:
    `maintainerClearance` ruleset bypasses Admin, always, and the account
    these commands run as has that role — the convention in AgentConduct.md
    is the only barrier that actually holds.
+
+## The pair rule
+
+The rule in full — worker vs. orchestrator, what independence must mean at
+minimum, and its scope — is project-agnostic and lives in
+[AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4. This
+project's own fill-in: implementing a ticket from
+`.agent/.local/.localSpec/DevTickets/openTickets/` takes a worker agent
+that makes the change and an independent orchestrator agent that quotes it
+against this checklist, writes the record (once
+[AgentReport](../.localSpec/DevTickets/openTickets/main_1-2_AgentReport_DevPlanTicket.md)
+exists to receive it — see *Attribution*, below), and runs step 4 above
+(`pixi run bump-version`) — the same judgement call as the record itself,
+made by the same role for the reason AgentConduct.md §4 gives. Drafting,
+ranking, or closing a ticket in `DevTickets/` is orchestration work
+already and does not need a second orchestrator to quote it.
+
+## Whose data this is
+
+[AgentDataContract.md](../../.distant/dev-sync/AgentDataContract.md) states
+the claim in full, and — read this part first — exactly what a document
+like it can and cannot deliver on its own: every record and every piece of
+data linked to this project belongs to its owner, and an agentProvider may
+use it only to develop this project. This project has not yet turned that
+claim into the content-addressed, dated record its own §3 describes — that
+needs the owner to supply which provider and which terms reference to pin
+(see the **AgentContract** ticket in
+`.agent/.local/.localSpec/DevTickets/`, cited by name since a ticket is
+renamed when archived). Until it exists, there is nothing for a
+`.self-history` record to cite, and that absence is itself the honest
+state of things, not an error to paper over.
 
 ## Attribution
 
