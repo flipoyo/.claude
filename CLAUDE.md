@@ -173,9 +173,9 @@ minimum, and its scope — is project-agnostic and lives in
 project's own fill-in: implementing a ticket from
 `.agent/.local/.localSpec/DevTickets/openTickets/` takes a worker agent
 that makes the change and an independent orchestrator agent that quotes it
-against this checklist, writes the record (once
-[AgentReport](../.localSpec/DevTickets/openTickets/main_1-2_AgentReport_DevPlanTicket.md)
-exists to receive it — see *Attribution*, below), and runs step 4 above
+against this checklist, writes the record (`cgitsync self-history add`,
+per the **AgentReport** ticket, implemented and archived — see
+*Attribution*, below), and runs step 4 above
 (`pixi run bump-version`) — the same judgement call as the record itself,
 made by the same role for the reason AgentConduct.md §4 gives. Drafting,
 ranking, or closing a ticket in `DevTickets/` is orchestration work
@@ -202,9 +202,10 @@ The signed record citing that assessment lives at
 names its terms version on the release row as `artefact:agent_contract`
 (absent, not fatal, when nothing is signed — see the **AgentContract**
 ticket in `.agent/.local/.localSpec/DevTickets/`, cited by name since a
-ticket is renamed when archived). `.self-history` citing a contract by
-hash is still pending: it needs the **AgentReport** ticket's record to
-exist first.
+ticket is renamed when archived). `.self-history` now cites a contract by
+hash for real (**AgentReport** WP6, implemented and archived):
+`cgitsync self-history add` reads `agent-contracts/current` itself and
+records its hash, absent rather than fatal when nothing is signed.
 
 ## Attribution
 
@@ -226,11 +227,14 @@ project's own fill-ins:
   never reach a public repository**, and nothing in it may be copied into
   one.
 
-The **AgentReport** ticket in `.agent/.local/.localSpec/DevTickets/` carries the
-record's fields and the conformity score it holds — cited by name, not by
-path, because a ticket is renamed when it is archived. Until it lands
-there is nothing to write: the publication rule above is in force today,
-the accounting rule says where the record will go.
+The **AgentReport** ticket (`.agent/.local/.localSpec/DevTickets/archive/`,
+implemented 2026-09-24 — cited by name, not by path, because a ticket is
+renamed when it is archived) carries the record's fields and the
+conformity score it holds. `cgitsync self-history add` writes one to
+`.cgitsync/.self-history` (folded into `.cgitsync/.memory/.self-history`
+by `memory push`); `cgitsync memory self-history` reads them back. The
+publication rule above governs what reaches `README.md`; the accounting
+rule governs everything self-history actually records.
 
 ## Architecture boundary
 
