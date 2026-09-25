@@ -27,11 +27,21 @@ usage.
 
 **What you need to do with it.** Follow it as written — it overrides default
 behavior — before making any change, and run its before-committing checklist
-before every commit.
+before every commit. **Before that: load
+[digest.md](../.localSpec/digest.md) in full.** It is every `MUST`/`NEVER`
+rule this spec tree states, one line each, with nothing else — short
+enough to read in a session's opening moments, so a rule like "an agent is
+never credited on a commit" sits in view instead of two hops behind a
+pointer read once and forgotten under later context
+(`main_1-7_SpecTree_DevPlanTicket.md` §1, an incident this rule exists
+because of). The full documents below are still where the *why* lives;
+`digest.md` is not a replacement for reading them, only a floor under
+forgetting one of their rules.
 
 ```mermaid
 graph TD
-    CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|users start at| README["README.md"]
+    CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|"load in full, every session"| DIGEST[".agent/.local/.localSpec/digest.md"]
+    CLAUDE -->|users start at| README["README.md"]
     CLAUDE -->|deeper spec| SPEC[".agent/.local/.localSpec/AdditionalSpecs.md"]
     CLAUDE -->|doc rules| STYLE[".agent/.distant/documentation/DOCSTYLE.md"]
     CLAUDE -->|checklist shape, commit rule, pair rule, credit| CONDUCT[".agent/.distant/dev-sync/AgentConduct.md"]
