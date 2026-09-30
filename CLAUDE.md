@@ -69,8 +69,13 @@ pixi run bump-version  # orchestrator: bump SemVer and sync every manifest and d
 pixi run bump-build    # worker: bump the __build__ counter alone (see below)
 ```
 
-CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
-`main`/`lechat`. Run both locally before pushing.
+CI (`.github/workflows/ci.yml`) runs `lint` and `test` on push/PR to
+`main`/`lechat`, plus an `installed` job that builds the package, installs
+the wheel with `pipx` and runs `scripts/smoke_installed.sh` outside the
+checkout — the user's route, which needs no Pixi. Run `lint` and `test`
+locally before pushing. A release is cut from a tag by
+`.github/workflows/release.yml`; pushing a tag and publishing are the
+owner's actions (`AdditionalSpecs.md`, *Publishing a release*).
 
 ### Bootstrapping a working checkout
 
@@ -142,7 +147,7 @@ Do all of these as part of the change, not as a follow-up:
    `src/ComplexGitSync/__init__.py`'s `__version__`, the README title, and
    the `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
    `docs/preamble.tex`. DevSpecs requires a single command for this —
-   never hand-edit those version fields. `--pre <stage>`/`--release` manage
+   never hand-edit those version fields. When a release will be cut from that version, add its `## X.Y.Z` entry to `CHANGELOG.md` in the same step — `bump-version` does not touch it, and `release.yml` refuses a tag without it. `--pre <stage>`/`--release` manage
    a pre-release cycle; `--dry-run` previews any of it.
 5. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
    sources but does *not* regenerate the tracked PDFs:
