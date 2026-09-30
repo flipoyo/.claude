@@ -100,7 +100,7 @@ pixi install        # bootstrap clones a plain checkout, so it needs its own
 project entry), `docs/` (`DocComplexGitSync`), and every agentic mount under
 `.agent/.distant/` (`ticket`, `dev-sync`, `documentation` — shared,
 read-only) and `.agent/.local/` (`.localSpec`, `.claude`, and this
-project's own `cgitsync-dev`/`release`/`dogfooding` — ours to write) cloned
+project's own `.dev`/`.versioning`/`.auto` — ours to write) cloned
 side by side. `pixi.toml`'s
 `complexgitsync = { path = ".", editable = true }` makes
 this checkout self-editable the moment that second `pixi install` finishes:
@@ -363,29 +363,16 @@ identifiers.
   share). Every agentic repository below nests inside it purely through its
   own `relative_path`, split into two halves so the path itself answers
   "may I edit this?":
-  - `.agent/.local/` — **ours to write.** `.localSpec/` (a mount of
-    `flipoyo/.localSpec`, branch `ComplexGitSync`): `AdditionalSpecs.md`
-    (deeper spec/authoring reference beyond this file), `AGENT.md` (the
-    roster of specialized agent roles for parallel multi-agent work on this
-    project — Dev, CI/CD, Editing, Orchestration, Maths, Scientific editing
-    — and how they hand off work), `audit.md` (findings, legacy references,
-    open decisions/risks), and `DevTickets/` (the planning surface — see
-    the next bullet). `.claude/` (above). Also `cgitsync-dev/`, `release/`
-    and `dogfooding/` — this project's own remaining private mounts,
-    dispatched from what used to be sections of `CLAUDE.md` and
-    `AdditionalSpecs.md`.
-  - `.agent/.distant/` — **shared, read-only** across every project that
-    conforms to `DevSpec`. `ticket/` (a mount of `flipoyo/.ticketing`,
-    branch `main`): `TICKETLIFECYCLE.md`. `dev-sync/` (a mount of
-    `flipoyo/DevSpec`, branch `main`): `DevSpecs.md` (the project-agnostic
-    philosophy `.agent/.local/.localSpec/AdditionalSpecs.md` and this file
-    conform to), `AgentConduct.md` (the checklist shape, commit-message
-    rule, and attribution rules this file's *Before committing* and
-    *Attribution* sections fill in with ComplexGitSync's own specifics),
-    and a generic `AGENT.md` template. `documentation/` (a mount of
-    `flipoyo/DocSpec`, branch `main`): `DOCSTYLE.md`. `.agentSpec` itself —
-    the single repository these three used to nest inside, `DevSpec`
-    included — is no longer mounted by this project at all.
+  [AgenticManifest.md](../.localSpec/AgenticManifest.md) is the one list of
+  what is mounted there: each mount, the repository behind it, whether it
+  is `local` (**ours to write**) or `distant` (**shared, read-only** across
+  every project that conforms to `DevSpec`), what an agent goes there for,
+  and which of its Markdown files are specs. Read its *role* column to find
+  where a kind of rule lives; change it in the same change that adds or
+  removes a mount in `examples/complexgitsync4dev.cgs`, because
+  `pixi run check-spectree` fails when the two disagree. `.agentSpec`, the
+  single repository the shared mounts used to nest inside, is no longer
+  mounted by this project at all.
 - `.agent/.local/.localSpec/DevTickets/` — **the planning surface, and it
   is private**; the public repository holds no tickets at all. Four things
   live there, and nothing else:
