@@ -157,7 +157,9 @@ Do all of these as part of the change, not as a follow-up:
    the commit message for the repositories the change touched — the
    project's own and each mounted configuration repository that changed.
    Deliver it as text in the finishing report; whether to commit is the
-   owner's call unless the owner asks for it.
+   owner's call unless the owner asks for it. `cgitsync commit` checks the
+   message itself in a tree that has adopted DevSpec (`commit_message.py`)
+   and refuses one that breaks the rule below, naming which.
 
    The checklist shape (deliver, don't assume you should commit; never
    push without being asked) and the commit-message rule in full —
@@ -278,6 +280,7 @@ committing, as part of that task's change, not as a separate follow-up.
 | `universal_clock.py` | The sole reader of the real wall clock, high-resolution counter, PID and entropy source anywhere in `src/`. Defines `ClockProtocol` — the injectable interface every dated fact this project writes goes through — and `SystemClock`, the one real implementation. Every other module accepts a `clock: ClockProtocol` rather than reading `datetime`/`time`/`os`/`secrets` itself, checked unconditionally by `pixi run check-ceilings` the same way `subprocess` confinement is. `memory/ledger_entry.py` (Ring 0) keeps a structurally identical `ClockProtocol` of its own rather than importing this (Ring 1) module's — Ring 0 must be self-contained — and Python's structural typing makes the two interchangeable at every call site regardless. |
 | `memory/` | Everything a workspace remembers, including `repository.py`: what it takes for a memory to *be* a repository — the `.cgs` entry mounting it at `.cgitsync`, which branch of the shared `.memory` repository this project uses, the message its own commit carries — while still running no Git itself. A State records exactly one machine path, the tree's own root; everything else is written against the tree as `$CGSTREE/...`, because a memory gets pushed. The rest of the package: States (`states.py`), content-addressed Environment records (`environment.py`), the hash-chained ledger (`ledger_entry.py`, `ledger_store.py`), commit/publish evidence (`commit_log.py`), verification (`integrity.py`), and the legacy register reader (`store.py`). Every command that writes a State appends an entry carrying its toolchain and Environment reference. **Nothing here runs Git.** |
 | `toolchain.py` | The five version strings a ledger entry records, read at most once per process and reported as `none` when a tool is not installed. Asks `git_runner.tool_version`, so no second module imports `subprocess`. Versions are provenance, never identity: they never enter a State's name. |
+| `commit_message.py` | `CommitMessagePolicy`: whether a hand-written commit message keeps `AgentConduct.md` §2's shape — `<project-name><version>` prefix, three lines at most, no backtick, no `$(`, no agent-credit trailer — and which rule it broke. Ring 1: reads the tree's `pyproject.toml`, runs no Git, never rewrites a message. **Binds only a tree that has adopted DevSpec** (its root holds `AgentConduct.md` and a `pyproject.toml`); any other tree gets `None` and commits as before. Called by `ComplexGitSyncClient.commit`, and so by `freeze_release`; messages ComplexGitSync writes for itself never reach it. Cannot see damage a shell already did: substituted text is ordinary prose; that is `autofix`'s tip-commit inspection. |
 | `tree_env.py` | Observes and content-hashes secret-free machine, tool, authentication and manifest facts, and compares them with `.cgs` requirements. Environment metadata never enters a State hash. |
 | `orchestre.py` | The `ComplexGitSyncClient` public facade and `Orchestre` coordination layer; delegates to every module above rather than re-implementing them; still owns run logging and the `.lgr` register/sync ledger directly. A run's log no longer depends on that run writing a State: `CommandRunLogger.ensure_log_file` binds one on its own, which is what lets a *refused* command — a conflicting merge, which by definition writes no State — leave the record `autofix` later reads. `write_gts_snapshot` was the sole binder before, so the failing run was precisely the one that left no trace. Every command that moves `HEAD` writes a State, `merge` included: it reads the branch it is merging into once, up front, from `git_tree_branch.py` (`merge b` is `merge b --into <the tree's branch>`), so the State and the log can both say what merged into what. |
 | `config_document.py` / `config_document_io.py` | Format-neutral `ConfigDocument` base (pure) and its file-I/O mixin (Ring 1), shared by `CgsDocument`/`GtsDocument`. |
@@ -292,6 +295,14 @@ is checked against; [.agent/.local/.localSpec/audit.md](../.localSpec/audit.md) 
 audit findings, not the architecture reference itself.
 
 Data flow: `CLI / Python caller → ComplexGitSyncClient.configure() → cgs_format.py → CgsDocument → GitTree → orchestre.py → registry.py / operations.py → GitRepo / git_runner.py`.
+
+**Module shape** — one major class names each module, two or three classes
+at most (enums, exceptions and method-less value objects not counted), a file
+past 2000 lines becomes a directory, `memory/` and the ledger are class-based,
+`cli/` is the one exemption — is stated in
+[.agent/.local/.localSpec/AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md)'s
+*Module shape* section and cited from `digest.md`. `DevSpecs.md`'s
+*Object-Oriented Design* and *Monolithic Canonical API* are where it comes from.
 
 `parse_repo_id()` in `cgs_format.py` is the *only* repo-identifier parser —
 don't add another one in `cli/`, `git_tree.py`, `git_repo.py`, or
