@@ -238,7 +238,9 @@ project's own fill-ins:
 
 - **Publication rule.** The agent is named in
   [README.md](../../../README.md)'s *LLM assistance* section, and in no
-  other public place. Keep that section current.
+  other public place. Keep that section current. Wherever an example needs
+  an agent's vendor or model (help text, `docs/`, tests, fixtures), write
+  the placeholders `vendor-name` and `model-name`, never a real one.
 - **Accounting rule.** What each agent actually did belongs in
   `.cgitsync/.memory/.self-history`: which ticket was served, which agent
   and role acted, its vendor and model version, the States the work moved
@@ -405,6 +407,11 @@ Follow [.agent/.distant/documentation/DOCSTYLE.md](../../.distant/documentation/
 document in this repo is written — abstract first, mermaid graph, audience
 separation, length, one authoritative file per purpose. It applies to every
 `README.md`, spec, and file under `docs/`.
+
+**One exception (owner, 2026-10-02): the project's root `README.md`.** It
+is the user's front page, so it opens with the tool's name and what it is
+for, not with an abstract and graph. Every other Markdown document, every
+other `README.md` included, follows DOCSTYLE §1.
 
 DOCSTYLE.md §5 already states the plain-English rule, its worked examples
 and where it loosens, and the finishing-report bar in full — including
