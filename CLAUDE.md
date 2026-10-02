@@ -151,9 +151,11 @@ Do all of these as part of the change, not as a follow-up:
    `docs/preamble.tex`. DevSpecs requires a single command for this —
    never hand-edit those version fields. `--pre <stage>`/`--release` manage
    a pre-release cycle; `--dry-run` previews any of it.
-5. **Rebuild the docs if you changed them.** `bump-version` rewrites `.tex`
-   sources but does *not* regenerate the tracked PDFs:
-   `cd docs && latexmk -pdf MASTER.tex` (plus each `c_*.tex` you touched).
+5. **Rebuild the docs PDFs after every `bump-version`, and after any change
+   to the docs.** `bump-version` rewrites `.tex` sources but does *not*
+   regenerate the tracked PDFs, and every title page shows the version, so
+   all of them are stale after a bump. The command and the reason are in
+   `.agent/.local/.versioning/Versioning.md`, `bump-version`.
 6. **Update `.agent/.local/.localSpec/AdditionalSpecs.md`'s architecture
    section** if module responsibility moved (see below).
 7. **Document any new CLI command** in the README command table *and*
