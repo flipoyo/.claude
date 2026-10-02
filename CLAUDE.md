@@ -238,9 +238,20 @@ project's own fill-ins:
 
 - **Publication rule.** The agent is named in
   [README.md](../../../README.md)'s *LLM assistance* section, and in no
-  other public place. Keep that section current. Wherever an example needs
-  an agent's vendor or model (help text, `docs/`, tests, fixtures), write
-  the placeholders `vendor-name` and `model-name`, never a real one.
+  other public place. Keep that section current.
+- **Parametric names in the public front only** (owner, 2026-10-02). The
+  public front is anonymous: in the project's own repositories (those
+  `status` shows with scope `project`: `ComplexGitSync` and
+  `DocComplexGitSync`), any example that needs an agent's vendor or model
+  (help text, `docs/`, tests, fixtures) writes the placeholders
+  `vendor-name` and `model-name`, never a real one. The private part is
+  not anonymous, because it is where the parameters get their values. In a
+  repository `status` shows as `private/local` or `private/distant`
+  (`.localSpec`, `.claude`, `.memory`, `.self-history`, the agent contracts
+  under `.agent/.distant/dev-sync/`), specs, tickets and records name the
+  real vendor and model, and must not be rewritten with placeholders.
+  README's *LLM assistance* section is the one public place the real name
+  appears, by the publication rule above.
 - **Accounting rule.** What each agent actually did belongs in
   `.cgitsync/.memory/.self-history`: which ticket was served, which agent
   and role acted, its vendor and model version, the States the work moved
