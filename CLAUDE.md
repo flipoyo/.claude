@@ -66,7 +66,7 @@ pixi install         # create/update the environment (run after touching pixi.to
 pixi run test        # pytest, tests/unit + tests/integration
 pixi run lint        # ruff check .
 pixi run bump-version  # orchestrator: bump SemVer and sync every manifest and doc (see below)
-pixi run bump-build    # worker: bump the __build__ counter alone (see below)
+pixi run bump-build    # worker: bump the __build__ counter, then bump-version patch at least (see below)
 ```
 
 CI (`.github/workflows/ci.yml`) runs both `lint` and `test` on push/PR to
@@ -122,7 +122,9 @@ Do all of these as part of the change, not as a follow-up:
    `.agent/.local/.localSpec/AdditionalSpecs.md`, *Versioning*, *Who bumps
    what* — so a
    change that touches `src/` and skips this step is visible in the diff
-   and costs conformity score when the work is quoted.
+   and costs conformity score when the work is quoted. **It is never the
+   last versioning step: every `bump-build` is followed by step 4, at
+   `patch` at least, in the same change.**
 3. **`cgitsync status`, run from this tree's own root, must show
    `errors=0`.** A green test suite proves the code works in isolation; it
    does not prove `cgitsync` can still describe the tree it is actually
@@ -133,11 +135,16 @@ Do all of these as part of the change, not as a follow-up:
    over a fixture would have caught. Fix the repository, or the code that
    left it that way, before calling a task finished; do not just note the
    error and move on.
-4. **Run `pixi run bump-version {major,minor,patch}`** when wrapping up a
-   feature branch — this is an orchestrator step, a judgement call about
-   what the change did to the public interface
-   (`.agent/.local/.localSpec/AdditionalSpecs.md`, *Versioning*), not
-   something CI ever does. `pyproject.toml` holds the
+4. **Run `pixi run bump-version {major,minor,patch}` after every
+   `bump-build`, at `patch` at least**, and for any change outside `src/` that
+   still changes what a command or script does (`scripts/`, a pixi task). Every build is released: a follow-up fix to a version not yet
+   committed still gets its own patch, and the owner saying "patch" means
+   exactly this step. Choosing above `patch` is a judgement call about
+   what the change did to the public interface, so it is an orchestrator
+   step. When no orchestrator quotes the work, the worker runs the `patch`
+   floor itself and says in its report if the change deserves `minor`
+   (`.agent/.local/.versioning/Versioning.md`, *Who bumps what*). CI never
+   does any of this. `pyproject.toml` holds the
    authoritative SemVer; the one command syncs `pixi.toml`,
    `src/ComplexGitSync/__init__.py`'s `__version__`, the README title, and
    the `\cgsversion` macro in `docs/Setup/Shortcuts.tex` and
