@@ -375,7 +375,7 @@ identifiers. Every new command follows `DevSpecs.md`'s *CLI Grammar*
   since `memory-dev_1-2_MemoryOnboarding`, 2026-09-17 — `.memory`, mounted
   at `.cgitsync`, this project's own pushed memory. This is what makes
   ComplexGitSync manage its own working tree, and what *Bootstrapping a
-  working checkout* above uses. It is also `tutorials/04_private_repos.md`'s
+  working checkout* above uses. It is also `tutorials/05_private_repos.md`'s
   worked example and what CI dogfoods, being the only checked-in spec that
   uses every kind of private entry.
   The two files are not duplicates — one installs the tool, the other
