@@ -158,10 +158,17 @@ Do all of these as part of the change, not as a follow-up:
    `.agent/.local/.versioning/Versioning.md`, `bump-version`.
 6. **Update `.agent/.local/.localSpec/AdditionalSpecs.md`'s architecture
    section** if module responsibility moved (see below).
-7. **Document any new CLI command** in the README command table *and*
-   `docs/Text/user_guide.tex`, and its client method in
-   `docs/Text/api_python.tex`. The README half is enforced by
-   `tests/unit/test_cli_smoke.py::test_readme_documents_every_cli_command`.
+7. **Document any new CLI command** in `docs/Text/user_guide.tex`, and
+   its client method in `docs/Text/api_python.tex`. The user-guide half is
+   enforced by
+   `tests/unit/test_cli_smoke.py::test_user_guide_documents_every_cli_command`.
+   **Never add it to `README.md`** (owner, README-UX, 2026-10-06): the
+   README is the user's front page — what the tool is for, how to install
+   it, that `cgitsync --help` and `cgitsync <command> --help` list the
+   commands and their options, and each use case in a sentence with its
+   tutorial. No command table, no option list, no internals;
+   `test_readme_stays_a_short_front_page` holds it under 250 lines. A new
+   *use case* gets one row there and a tutorial; a new command does not.
 8. **Deliver the commit message.** Finishing a ticket includes writing
    the commit message for the repositories the change touched — the
    project's own and each mounted configuration repository that changed.
@@ -340,7 +347,7 @@ Git operations may touch the network.
 capability must exist in both layers: implement it as a
 `ComplexGitSyncClient` method carrying all the semantics, then wire a thin
 `_handle_*` → `_execute_*` pair in the owning `cli/<group>.py` module (per
-README's Minimalist/Expert/Configuration grouping) that collects arguments,
+the Minimalist/Expert/Configuration grouping `cgitsync --help` and the user guide show) that collects arguments,
 calls that one method, and prints. A client method with no CLI surface is
 unreachable for users; a CLI command with logic of its own breaks the
 mirror. `cli/` must never touch `subprocess`/Git or parse repository
@@ -425,8 +432,10 @@ separation, length, one authoritative file per purpose. It applies to every
 
 **One exception (owner, 2026-10-02): the project's root `README.md`.** It
 is the user's front page, so it opens with the tool's name and what it is
-for, not with an abstract and graph. Every other Markdown document, every
-other `README.md` included, follows DOCSTYLE §1.
+for, not with an abstract and graph. It stays short and user-facing —
+see *Before committing*, step 7, for what it holds and what it never
+does. Every other Markdown document, every other `README.md` included,
+follows DOCSTYLE §1.
 
 DOCSTYLE.md §5 already states the plain-English rule, its worked examples
 and where it loosens, and the finishing-report bar in full — including
