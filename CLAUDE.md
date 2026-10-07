@@ -87,9 +87,9 @@ git clone https://github.com/flipoyo/ComplexGitSync.git
 cd ComplexGitSync
 pixi install
 
-pixi run cgitsync bootstrap examples/complexgitsync4dev.cgs ComplexGitSync
+pixi run cgitsync bootstrap examples/complexgitsync4dev.cgs
 # Copy the export command from bootstrap's own output, or use:
-export CGSHOME=/home/user/.cgs/CGS20260831131233/ComplexGitSync
+export CGSHOME=/home/user/.cgs/ComplexGitSync-20260831131233
 
 cd "$CGSHOME"       # this *is* the freshly cloned ComplexGitSync checkout —
 pixi install        # bootstrap clones a plain checkout, so it needs its own
