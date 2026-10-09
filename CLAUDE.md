@@ -19,8 +19,8 @@ choice, one short *fill-in* in `.agent/.local/` that opens with a
 This file is the way in.
 
 **What you will find.** What the project is, the two installs, the layout of
-the two levels, the eight checklist steps, and the few rules that have no
-other home.
+the two levels, what to do when the owner says `implement <ticket>`, the
+eight checklist steps, and the few rules that have no other home.
 
 **Who it is for.** Anyone changing code or docs in this repo. End users only
 need [README.md](../../../README.md); this file is for development.
@@ -35,6 +35,7 @@ step points to.
 ```mermaid
 graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|"load in full, every session"| DIGEST["digest.md"]
+    CLAUDE -->|"'implement X': ask, work,<br/>launch the orchestrator"| PAIR["worker + orchestrator<br/>(gated: check-tickets)"]
     CLAUDE -->|"the eight steps"| DEV["cgitsync-dev.md<br/>(.dev)"]
     DEV --> VER["Versioning.md"]
     CLAUDE -->|"tickets"| TK["DevTickets/README.md"]
@@ -79,6 +80,35 @@ snapshot), `.lgr` (generated local register / append-only sync ledger).
 
 `CLAUDE.md` and `AGENT.md` at the project root are symbolic links into
 `.agent/.local/.claude/`.
+
+## When the owner says `implement <ticket>`
+
+These are orders, not a description, and they come before the eight steps
+(owner, 2026-10-09, PairRuleGate). Do them in this order.
+
+1. **`implement <ticket>` is the explicit request for a subagent** that the
+   harness's Agent tool asks for. Launching the orchestrator is not
+   optional and needs no further permission.
+2. **Read the ticket, then ask every open *Decisions for the owner* with
+   `AskUserQuestion` before the first edit.** A recommendation is never the
+   answer. A raise of a ceiling baseline is asked the same way.
+3. **Implement as the worker**: code, tests, docs, `pixi run bump-build`.
+   **Never** run `bump-version`, write a self-history record, or score your
+   own work.
+4. **Launch the orchestrator with the Agent tool, in the foreground.** Give
+   it the ticket's name, every repository the diff touches, and the
+   owner's answers. Tell it to quote the work against the eight steps,
+   decide the version level, run `pixi run bump-version`, rebuild the PDFs,
+   and write the record with `cgitsync self-history add`.
+5. **Fix every defect it reports, then send the work back to the same
+   orchestrator** for a re-quote. Repeat until it reports no blocking
+   defect.
+6. **Only then archive the ticket and deliver the commit message.**
+   `pixi run check-tickets` and `cgitsync commit` refuse a planning ticket
+   archived without its orchestrator's record.
+
+Drafting, ranking or closing a ticket is orchestration already and
+launches nobody. Why the pair exists: [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4.
 
 ## Before committing — the eight steps
 

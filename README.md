@@ -10,6 +10,11 @@ permission allowlist, which every project inherits. Each consuming project
 then gets its own branch, named after the project, merging `main` forward
 and adding that project's `CLAUDE.md` and `AGENT.md`.
 
+The `ComplexGitSync` branch does not carry `settings.json` (owner,
+2026-10-09): mounted at `.agent/.local/.claude/`, it is never read by the
+harness, and its paths had gone stale. A harness configuration for this
+project, if one is wanted, is its own ticket.
+
 The consuming project tracks `CLAUDE.md` and `AGENT.md` at its own root as
 symbolic links into this mount (`CLAUDE.md -> .claude/CLAUDE.md`,
 `AGENT.md -> .claude/AGENT.md`), so Claude Code finds them at the exact
