@@ -126,7 +126,7 @@ shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.
 5. Rebuild the docs PDFs after every `bump-version` and every docs change.
 6. Update `AdditionalSpecs.md`'s architecture section if module responsibility moved.
 7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
-8. Deliver the commit message (`cgitsync<version>`, three lines) for every repository touched; never push without being asked.
+8. Deliver the commit message (`cgitsync-<version>`, three lines) for every repository touched; never push without being asked.
 
 The plans are in [DevTickets/](../.dev/DevTickets/README.md). The data
 contract and the attribution rules (an agent is never credited on a commit;
