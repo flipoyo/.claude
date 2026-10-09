@@ -108,7 +108,10 @@ These are orders, not a description, and they come before the eight steps
    archived without its orchestrator's record.
 
 Drafting, ranking or closing a ticket is orchestration already and
-launches nobody. Why the pair exists: [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4.
+launches nobody. Why the pair exists and why it is written as orders:
+[AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4 and §4.1. This
+block restates §4.1 on purpose, as this project's exception (owner,
+2026-10-09): the orders bind only in the file every session loads.
 
 ## Before committing — the eight steps
 
@@ -125,11 +128,10 @@ shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.
 7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
 8. Deliver the commit message (`cgitsync<version>`, three lines) for every repository touched; never push without being asked.
 
-Implementing a ticket takes a worker and an independent orchestrator (the
-pair rule, [cgitsync-dev.md](../.dev/cgitsync-dev.md)); the plans are in
-[DevTickets/](../.dev/DevTickets/README.md). The data contract and the
-attribution rules (an agent is never credited on a commit; the public front
-uses `vendor-name` and `model-name`) are filled in in the same file.
+The plans are in [DevTickets/](../.dev/DevTickets/README.md). The data
+contract and the attribution rules (an agent is never credited on a commit;
+the public front uses `vendor-name` and `model-name`) are filled in in
+[cgitsync-dev.md](../.dev/cgitsync-dev.md).
 
 ## Architecture boundary
 
