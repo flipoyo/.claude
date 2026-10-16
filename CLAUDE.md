@@ -99,7 +99,9 @@ These are orders, not a description, and they come before the eight steps
    it the ticket's name, every repository the diff touches, and the
    owner's answers. Tell it to quote the work against the eight steps,
    decide the version level, run `pixi run bump-version`, rebuild the PDFs,
-   and write the record with `cgitsync self-history add`.
+   and write the record with `cgitsync self-history add`. Tell it to
+   propose **one** commit message, to be used unchanged in every repository
+   the diff touches.
 5. **Fix every defect it reports, then send the work back to the same
    orchestrator** for a re-quote. Repeat until it reports no blocking
    defect.
@@ -126,7 +128,7 @@ shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.
 5. Rebuild the docs PDFs after every `bump-version` and every docs change.
 6. Update `AdditionalSpecs.md`'s architecture section if module responsibility moved.
 7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
-8. Deliver the commit message (`cgitsync-<version>`, three lines) for every repository touched; never push without being asked.
+8. Deliver **one** commit message (`cgitsync-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
 
 The plans are in [DevTickets/](../.dev/DevTickets/README.md). The data
 contract and the attribution rules (an agent is never credited on a commit;
