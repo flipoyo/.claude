@@ -115,6 +115,19 @@ launches nobody. Why the pair exists and why it is written as orders:
 block restates §4.1 on purpose, as this project's exception (owner,
 2026-10-09): the orders bind only in the file every session loads.
 
+## When the owner says `implement "CORR: @agent-dev"`
+
+These are orders too (owner, 2026-10-29). A file whose first line is `CORR:` or `CORRection:`, followed by
+`@agent-dev` (the owner also writes `@dev-agent`), holds a correction the owner left in the file itself.
+
+1. **Find every one in the current Operating Space**: every repository of the tree, never `.git/` or `.pixi/`.
+2. **Resolve each as written**, in its own file. A `CMD:` line is a command. Ask with `AskUserQuestion`
+   what a note leaves open, before the first edit.
+3. **Remove the header and the note once resolved.** The file must be valid for its format again.
+4. **If a resolution changes `src/`, it is an `implement`**, with the orders above. Otherwise run the gates
+   (lint, test, `status`) and deliver the commit message yourself.
+5. **List each correction and its resolution** in the report, so the owner can check every one.
+
 ## Before committing — the eight steps
 
 Do all of them as part of the change, not as a follow-up. **Each step's
