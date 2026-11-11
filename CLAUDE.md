@@ -58,7 +58,7 @@ snapshot), `.lgr` (generated local register / append-only sync ledger).
 ## Layout — the two installs and the two levels
 
 - **`install.cgs`** (repository root) is the *user* install: the tool and
-  its documentation. **`examples/complexgitsync4dev.cgs`** is the *developer*
+  its documentation. **`examples/cgitsync-alpha.cgs`** is the *developer*
   install: the same, plus every agentic mount and `.memory` at `.cgitsync`.
   It is what CI dogfoods and what you bootstrap from (`DevSpecs.md`, *Two
   installs*; the commands are in [cgitsync-dev.md](../.dev/cgitsync-dev.md)).
