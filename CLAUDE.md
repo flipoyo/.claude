@@ -137,7 +137,7 @@ shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.
 1. `pixi run lint` and `pixi run test` must both pass.
 2. `pixi run bump-build` for any change under `src/`.
 3. `cgitsync status`, run from this tree's own root, must show `errors=0`.
-4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least.
+4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least (or `cgitsync version bump {patch,minor,major}`, which runs it across the tree).
 5. Rebuild the docs PDFs after every `bump-version` and every docs change.
 6. Update `AdditionalSpecs.md`'s architecture section if module responsibility moved.
 7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
