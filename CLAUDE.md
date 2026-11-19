@@ -1,47 +1,45 @@
-# ComplexGitSync
+# HydrologicalTwinAlphaSeries
 
-*Created: 2026-08-31*
+*Created: 2026-11-19*
 
 *Fills in: ../../.distant/dev-sync/SpecTree.md*
 
 ## Abstract — read this first
 
-**What this document is.** The map for anyone — human or coding agent —
+**What this document is.** The map for anyone, human or coding agent,
 doing development work in this repo: what to load first, where each kind of
 rule lives, and the titles of the eight steps that finish a change. It holds
 no command and no rule that is stated elsewhere.
 
-**Why it exists.** The rules used to be written here, in full, and again in
-three other files, and the copies drifted. Every agentic topic now has a
-shared *pattern* in `.agent/.distant/` and, where this project makes a
-choice, one short *fill-in* in `.agent/.local/` that opens with a
-`*Fills in:*` line ([SpecTree.md](../../.distant/dev-sync/SpecTree.md) §2).
-This file is the way in.
+**Why it exists.** Every agentic topic has a shared *pattern* in
+`.agent/.distant/` and, where this project makes a choice, one short
+*fill-in* in `.agent/.local/` that opens with a `*Fills in:*` line
+([SpecTree.md](../../.distant/dev-sync/SpecTree.md) §2). This file is the
+way in. It was seeded from ComplexGitSync's on 2026-11-19 and adapted.
 
-**What you will find.** What the project is, the two installs, the layout of
-the two levels, what to do when the owner says `implement <ticket>`, the
-eight checklist steps, and the few rules that have no other home.
+**What you will find.** What the project is, the developer install, the
+layout of the two levels, what to do when the owner says
+`implement <ticket>`, the eight checklist steps, and the few rules that
+have no other home.
 
-**Who it is for.** Anyone changing code or docs in this repo. End users only
-need [README.md](../../../README.md); this file is for development.
+**Who it is for.** Anyone changing code or docs in this repo. End users go
+through CaWaQS-ViZ and [README.md](../../../README.md).
 
 **What you need to do with it.** **Load [digest.md](../.localSpec/digest.md)
 in full, now:** it is every `MUST`/`NEVER` rule this spec tree states, one
-line each, short enough to read in a session's opening moments, so a rule
-like "an agent is never credited on a commit" sits in view instead of two
-hops behind a pointer. Then follow the steps below, and read the fill-in a
-step points to.
+line each. Then follow the steps below, and read the fill-in a step points
+to.
 
 ```mermaid
 graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|"load in full, every session"| DIGEST["digest.md"]
-    CLAUDE -->|"'implement X': ask, work,<br/>launch the orchestrator"| PAIR["worker + orchestrator<br/>(gated: check-tickets)"]
-    CLAUDE -->|"the eight steps"| DEV["cgitsync-dev.md<br/>(.dev)"]
+    CLAUDE -->|"'implement X': ask, work,<br/>launch the orchestrator"| PAIR["worker + orchestrator"]
+    CLAUDE -->|"the eight steps"| DEV["htas-dev.md<br/>(.dev)"]
     DEV --> VER["Versioning.md"]
     CLAUDE -->|"tickets"| TK["DevTickets/README.md"]
     CLAUDE -->|"architecture"| SPEC["AdditionalSpecs.md"]
     CLAUDE -->|"the patterns"| DIST[".agent/.distant/<br/>DevSpecs · AgentConduct<br/>SpecTree · TICKETLIFECYCLE · DOCSTYLE"]
-    CLAUDE -->|"gate before commit"| CI["lint + test + status errors=0"]
+    CLAUDE -->|"gate before commit"| CI["lint + test + QGIS-free<br/>+ status errors=0"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
     class CLAUDE here;
@@ -49,25 +47,26 @@ graph TD
 
 ---
 
-`cgitsync` synchronises a multi-repository Git workspace (a tree of nested
-repos) from a hand-written `.cgs` spec and a generated `.gts` state
-snapshot. User-facing docs and CLI usage: [README.md](../../../README.md).
-File formats: `.cgs` (hand-written topology, TOML), `.gts` (generated
-snapshot), `.lgr` (generated local register / append-only sync ledger).
+HydrologicalTwinAlphaSeries (HTAS) is the standalone scientific backend of
+CaWaQS-ViZ: it structures CaWaQS simulation outputs, computes on them and
+exposes the `HydrologicalTwin` facade and the `HydrologicalTwinClient`. It
+holds no user interface and no QGIS code. User-facing overview:
+[README.md](../../../README.md).
 
-## Layout — the two installs and the two levels
+## Layout — the developer install and the two levels
 
-- **`install.cgs`** (repository root) is the *user* install: the tool and
-  its documentation. **`examples/cgitsync-alpha.cgs`** is the *developer*
-  install: the same, plus every agentic mount and `.memory` at `.cgitsync`.
-  It is what CI dogfoods and what you bootstrap from (`DevSpecs.md`, *Two
-  installs*; the commands are in [cgitsync-dev.md](../.dev/cgitsync-dev.md)).
-- `src/ComplexGitSync/` source; `tests/unit/`, `tests/integration/`;
-  `examples/`; `docs/` (LaTeX, built PDFs tracked).
+- **`.config/htas-dev-beta.cgs`** is the developer install on `HT-BETA`: the
+  project, its documentation (`docs/hydrological_twin`), ComplexGitSync as a
+  read-only tool, the `.omniscience` ledger, `.memory` at `.cgitsync`, and
+  every agentic mount. Its header lists the install commands; the checklist
+  is in [htas-dev.md](../.dev/htas-dev.md). `htas-beta.cgs` at the root is
+  the earlier install, without the agentic mounts.
+- `src/HydrologicalTwinAlphaSeries/` source; `tests/unit/`,
+  `tests/integration/`; `docs/` (Markdown) and `docs/hydrological_twin/`
+  (LaTeX user guide, its own repository).
 - **`.agent/`** is a plain directory, never a repository.
   [AgenticManifest.md](../.localSpec/AgenticManifest.md) is the one list of
-  its mounts and spec files; `pixi run check-spectree` fails when it and the
-  developer `.cgs` disagree. The path answers "may I edit this?":
+  its mounts and spec files. The path answers "may I edit this?":
 
 | Under | Mount | Holds |
 |---|---|---|
@@ -75,102 +74,104 @@ snapshot), `.lgr` (generated local register / append-only sync ledger).
 | | `ticket` | [TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md) |
 | | `documentation` | [DOCSTYLE.md](../../.distant/documentation/DOCSTYLE.md) |
 | `.agent/.local/` — **ours to write** | `.claude` | this file and `AGENT.md`, a pointer stating the reading order |
-| | `.localSpec` | [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md) (architecture, the module table), [AGENT.md](../.localSpec/AGENT.md) (roles), [audit.md](../.localSpec/audit.md), [digest.md](../.localSpec/digest.md) |
-| | `.dev` | [README.md](../.dev/README.md): the checklist ([cgitsync-dev.md](../.dev/cgitsync-dev.md)), [Versioning.md](../.dev/Versioning.md), and [DevTickets/](../.dev/DevTickets/README.md) — **private**; the public repository holds no tickets |
+| | `.localSpec` | [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md) (layers, import rules), [AGENT.md](../.localSpec/AGENT.md) (roles), [audit.md](../.localSpec/audit.md), [digest.md](../.localSpec/digest.md) |
+| | `.dev` | [README.md](../.dev/README.md): the checklist ([htas-dev.md](../.dev/htas-dev.md)), [Versioning.md](../.dev/Versioning.md), and [DevTickets/](../.dev/DevTickets/README.md) — **private**; the public repository holds no tickets |
 
 `CLAUDE.md` and `AGENT.md` at the project root are symbolic links into
-`.agent/.local/.claude/`.
+`.agent/.local/.claude/`. The `ComplexGitSync/` checkout is the tool, on
+`CGS-ALPHA`: never edit it from this tree.
 
 ## When the owner says `implement <ticket>`
 
-These are orders, not a description, and they come before the eight steps
-(owner, 2026-10-09, PairRuleGate). Do them in this order.
+These are orders, not a description, and they come before the eight steps.
+Do them in this order.
 
 1. **`implement <ticket>` is the explicit request for a subagent** that the
    harness's Agent tool asks for. Launching the orchestrator is not
    optional and needs no further permission.
 2. **Read the ticket, then ask every open *Decisions for the owner* with
    `AskUserQuestion` before the first edit.** A recommendation is never the
-   answer. A raise of a ceiling baseline is asked the same way.
+   answer.
 3. **Implement as the worker**: code, tests, docs, `pixi run bump-build`.
    **Never** run `bump-version`, write a self-history record, or score your
    own work.
 4. **Launch the orchestrator with the Agent tool, in the foreground.** Give
    it the ticket's name, every repository the diff touches, and the
    owner's answers. Tell it to quote the work against the eight steps,
-   decide the version level, run `pixi run bump-version`, rebuild the PDFs,
-   and write the record with `cgitsync self-history add`. Tell it to
-   propose **one** commit message, to be used unchanged in every repository
-   the diff touches.
+   decide the version level, run `pixi run bump-version`, rebuild the user
+   guide PDF if tracked, and write the record with
+   `cgitsync self-history add`. Tell it to propose **one** commit message,
+   to be used unchanged in every repository the diff touches.
 5. **Fix every defect it reports, then send the work back to the same
    orchestrator** for a re-quote. Repeat until it reports no blocking
    defect.
 6. **Only then archive the ticket and deliver the commit message.**
-   `pixi run check-tickets` and `cgitsync commit` refuse a planning ticket
-   archived without its orchestrator's record.
 
 Drafting, ranking or closing a ticket is orchestration already and
-launches nobody. Why the pair exists and why it is written as orders:
+launches nobody. Why the pair exists:
 [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4 and §4.1. This
-block restates §4.1 on purpose, as this project's exception (owner,
-2026-10-09): the orders bind only in the file every session loads.
+block restates §4.1 on purpose: the orders bind only in the file every
+session loads.
 
 ## When the owner says `implement "CORR: @agent-dev"`
 
-These are orders too (owner, 2026-10-29). A file whose first line is `CORR:` or `CORRection:`, followed by
-`@agent-dev` (the owner also writes `@dev-agent`), holds a correction the owner left in the file itself.
+A file whose first line is `CORR:` or `CORRection:`, followed by
+`@agent-dev` (or `@dev-agent`), holds a correction the owner left in the
+file itself.
 
-1. **Find every one in the current Operating Space**: every repository of the tree, never `.git/` or `.pixi/`.
-2. **Resolve each as written**, in its own file. A `CMD:` line is a command. Ask with `AskUserQuestion`
-   what a note leaves open, before the first edit.
-3. **Remove the header and the note once resolved.** The file must be valid for its format again.
-4. **If a resolution changes `src/`, it is an `implement`**, with the orders above. Otherwise run the gates
-   (lint, test, `status`) and deliver the commit message yourself.
-5. **List each correction and its resolution** in the report, so the owner can check every one.
+1. **Find every one in the current Operating Space**: every repository of
+   the tree, never `.git/` or `.pixi/`.
+2. **Resolve each as written**, in its own file. A `CMD:` line is a
+   command. Ask with `AskUserQuestion` what a note leaves open, before the
+   first edit.
+3. **Remove the header and the note once resolved.** The file must be valid
+   for its format again.
+4. **If a resolution changes `src/`, it is an `implement`**, with the orders
+   above. Otherwise run the gates (lint, test, `status`) and deliver the
+   commit message yourself.
+5. **List each correction and its resolution** in the report.
 
 ## Before committing — the eight steps
 
 Do all of them as part of the change, not as a follow-up. **Each step's
-command and detail are in [cgitsync-dev.md](../.dev/cgitsync-dev.md)**; the
-shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1.
+command and detail are in [htas-dev.md](../.dev/htas-dev.md)**; the shape
+and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1.
+Steps 2, 4 and 5 wait on the SemVerPixi ticket; until it lands, report them
+as not run.
 
-1. `pixi run lint` and `pixi run test` must both pass.
+1. `pixi run lint` and `pixi run test` must both pass, and no `qgis`/`PyQt` import under `src/`.
 2. `pixi run bump-build` for any change under `src/`.
 3. `cgitsync status`, run from this tree's own root, must show `errors=0`.
-4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least (or `cgitsync version bump {patch,minor,major}`, which runs it across the tree).
-5. Rebuild the docs PDFs after every `bump-version` and every docs change.
-6. Update `AdditionalSpecs.md`'s architecture section if module responsibility moved.
-7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
-8. Deliver **one** commit message (`cgitsync-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
+4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least (or `cgitsync version bump <level>`); CI never writes a version.
+5. Rebuild the user guide PDF after every `bump-version` and every change to `docs/hydrological_twin`, if it is tracked.
+6. Update `AdditionalSpecs.md`'s layer table if a responsibility moved between layers.
+7. Document a new public method in `docs/api_capabilities.md` and `docs/api_examples.md`; never as a table in `README.md`.
+8. Deliver **one** commit message (`HydrologicalTwinAlphaSeries-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
 
-The plans are in [DevTickets/](../.dev/DevTickets/README.md). The data
-contract and the attribution rules (an agent is never credited on a commit;
-the public front uses `vendor-name` and `model-name`) are filled in in
-[cgitsync-dev.md](../.dev/cgitsync-dev.md).
+The plans are in [DevTickets/](../.dev/DevTickets/README.md). The
+attribution rules (an agent is never credited on a commit; the public front
+uses `vendor-name` and `model-name`) are filled in in
+[htas-dev.md](../.dev/htas-dev.md).
 
 ## Architecture boundary
 
-The module responsibilities, the ring model and the single-implementation
-rules (`parse_repo_id()`, `git_branch.py`, `git_runner.py`,
-`universal_clock.py`, the CLI mirroring the Python API) are in
-[AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md), *Responsibility
-boundaries*. Data flow: `CLI / Python caller → ComplexGitSyncClient →
-cgs_format.py → CgsDocument → GitTree → orchestre/ → registry.py /
-operations/ → GitRepo / git_runner.py`.
+The layers (L1 `ht/client` → L2 `ht/developer` → L3 `services` → `domain`
+→ `config`/`tools`), the import rules, the public interface and the
+QGIS-free rule are in [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md).
+Data flow: `CaWaQS-ViZ → HydrologicalTwinClient → operations_client →
+HydrologicalTwin (8 macro-verbs) → services → Compartment → CaWaQS output
+files`.
 
 ## Document conventions
 
 Follow [DOCSTYLE.md](../../.distant/documentation/DOCSTYLE.md) for every
-Markdown document in this repo — abstract first, mermaid graph, audience
-separation, length, one authoritative file per purpose. Every created
+Markdown document in the private spec tree: abstract first, mermaid graph,
+audience separation, one authoritative file per purpose. Every created
 document opens with a `*Created: YYYY-MM-DD*` line, and a local spec with a
-`*Fills in:*` line.
-
-**One exception (owner, 2026-10-02): the project's root `README.md`.** It is
-the user's front page, so it opens with the tool's name and what it is for,
-not with an abstract and graph. It stays short and user-facing — step 7 says
-what it holds and what it never does. Every other Markdown document, every
-other `README.md` included, follows DOCSTYLE §1.
+`*Fills in:*` line. The root `README.md` is the user's front page and opens
+with the project's name and purpose instead. The public `docs/*.md` predate
+this spec tree; bring one to DOCSTYLE when a change rewrites it, not as a
+side effect of another change.
 
 Planning tickets carry a filename lifecycle and a `*Branch:*` line, both in
 [TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md); this
