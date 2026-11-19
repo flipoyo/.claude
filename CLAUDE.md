@@ -136,8 +136,7 @@ Do all of them as part of the change, not as a follow-up. **Each step's
 command and detail are in [htas-dev.md](../.dev/htas-dev.md)**; the shape
 and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1.
 HTAS is laid out as ComplexGitSync is: `pixi.toml` holds the version,
-`pyproject.toml` the build. Steps 2 and 4 wait on the SemVerPixi ticket;
-until it lands, report them as not run.
+`pyproject.toml` the build.
 
 1. `pixi run lint` and `pixi run test` must both pass, and no `qgis`/`PyQt` import under `src/`.
 2. `pixi run bump-build` for any change under `src/`.
