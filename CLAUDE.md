@@ -92,14 +92,13 @@ Do them in this order.
 2. **Read the ticket, then ask every open *Decisions for the owner* with
    `AskUserQuestion` before the first edit.** A recommendation is never the
    answer.
-3. **Implement as the worker**: code, tests, docs, `pixi run bump-build`.
-   **Never** run `bump-version`, write a self-history record, or score your
-   own work.
+3. **Implement as the worker**: code, tests, docs, `pixi run bump-build`. **Never** run `cgitsync version bump`
+   or `bump-version`, write a self-history record, or score your own work.
 4. **Launch the orchestrator with the Agent tool, in the foreground.** Give
    it the ticket's name, every repository the diff touches, and the
    owner's answers. Tell it to quote the work against the eight steps,
-   decide the version level, run `pixi run bump-version`, rebuild the user
-   guide PDF if tracked, and write the record with
+   decide the version level, run `cgitsync version bump <level>` from the
+   tree's root, and write the record with
    `cgitsync self-history add`. Tell it to propose **one** commit message,
    to be used unchanged in every repository the diff touches.
 5. **Fix every defect it reports, then send the work back to the same
@@ -136,14 +135,15 @@ file itself.
 Do all of them as part of the change, not as a follow-up. **Each step's
 command and detail are in [htas-dev.md](../.dev/htas-dev.md)**; the shape
 and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1.
-Steps 2, 4 and 5 wait on the SemVerPixi ticket; until it lands, report them
-as not run.
+HTAS is laid out as ComplexGitSync is: `pixi.toml` holds the version,
+`pyproject.toml` the build. Steps 2 and 4 wait on the SemVerPixi ticket;
+until it lands, report them as not run.
 
 1. `pixi run lint` and `pixi run test` must both pass, and no `qgis`/`PyQt` import under `src/`.
 2. `pixi run bump-build` for any change under `src/`.
 3. `cgitsync status`, run from this tree's own root, must show `errors=0`.
-4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least (or `cgitsync version bump <level>`); CI never writes a version.
-5. Rebuild the user guide PDF after every `bump-version` and every change to `docs/hydrological_twin`, if it is tracked.
+4. `cgitsync version bump {patch,minor,major}` (it runs `pixi run bump-version`) for every change under `src/`, `patch` at least; never hand-edit a version field, and CI never writes one.
+5. Rebuild the user guide after every bump and every change to `docs/hydrological_twin`.
 6. Update `AdditionalSpecs.md`'s layer table if a responsibility moved between layers.
 7. Document a new public method in `docs/api_capabilities.md` and `docs/api_examples.md`; never as a table in `README.md`.
 8. Deliver **one** commit message (`HydrologicalTwinAlphaSeries-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
