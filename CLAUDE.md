@@ -47,8 +47,13 @@ graph TD
 
 ---
 
-HydrologicalTwinAlphaSeries (HTAS) is the standalone scientific backend of
-CaWaQS-ViZ: it structures CaWaQS simulation outputs, computes on them and
+HydrologicalTwinAlphaSeries (HTAS) is the first implementation of
+HydrologicalTwin, a systemic framework for the study of socio-hydrological
+systems that favours consistency across scales between interconnected social
+and hydrological compartments (owner, short ticket `ontology`, 2026-11-20).
+The Beta series, in development, adds the orchestration of hydrological
+models, with CaWaQS as its proof of concept; none of that is in this
+repository. HTAS is the standalone scientific backend of CaWaQS-ViZ: it structures CaWaQS simulation outputs, computes on them and
 exposes the `HydrologicalTwin` facade and the `HydrologicalTwinClient`. It
 holds no user interface and no QGIS code. User-facing overview:
 [README.md](../../../README.md).
