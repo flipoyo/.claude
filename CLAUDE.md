@@ -146,7 +146,7 @@ HTAS is laid out as ComplexGitSync is: `pixi.toml` holds the version,
 4. `cgitsync version bump {patch,minor,major}` (it runs `pixi run bump-version`) for every change under `src/`, `patch` at least; never hand-edit a version field, and nothing automatic writes one: there is no CI.
 5. Rebuild the user guide after every bump and every change to `docs/hydrological_twin`.
 6. Update `AdditionalSpecs.md`'s layer table if a responsibility moved between layers.
-7. Update every document the doc-impact map names for the change, in the same change: `src/` is the reference, and a document names nothing `src/` lacks. The README stays user-facing, at most 250 lines, with no method table.
+7. Update every document the doc-impact map names for the change, in the same change (a new command or option goes in the user guide, enforced by `test_user_guide_cli.py`; a new use case gets a README row and a tutorial): `src/` is the reference, and a document names nothing `src/` lacks. The README stays user-facing, at most 250 lines, with no method table.
 8. Deliver **one** commit message (`HydrologicalTwinAlphaSeries-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
 
 The plans are in [DevTickets/](../.dev/DevTickets/README.md). The
