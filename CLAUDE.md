@@ -97,6 +97,8 @@ Do them in this order.
 4. **Launch the orchestrator with the Agent tool, in the foreground.** Give
    it the ticket's name, every repository the diff touches, and the
    owner's answers. Tell it to quote the work against the eight steps,
+   with a *Docs touched* line (every document the doc-impact map names
+   for the diff, and whether it was updated; a missing one is blocking),
    decide the version level, run `cgitsync version bump <level>` from the
    tree's root, and write the record with
    `cgitsync self-history add`. Tell it to propose **one** commit message,
@@ -141,10 +143,10 @@ HTAS is laid out as ComplexGitSync is: `pixi.toml` holds the version,
 1. `pixi run lint` and `pixi run test` must both pass, and no `qgis`/`PyQt` import under `src/`.
 2. `pixi run bump-build` for any change under `src/`.
 3. `cgitsync status`, run from this tree's own root, must show `errors=0`.
-4. `cgitsync version bump {patch,minor,major}` (it runs `pixi run bump-version`) for every change under `src/`, `patch` at least; never hand-edit a version field, and CI never writes one.
+4. `cgitsync version bump {patch,minor,major}` (it runs `pixi run bump-version`) for every change under `src/`, `patch` at least; never hand-edit a version field, and nothing automatic writes one: there is no CI.
 5. Rebuild the user guide after every bump and every change to `docs/hydrological_twin`.
 6. Update `AdditionalSpecs.md`'s layer table if a responsibility moved between layers.
-7. Document a new public method in `docs/api_capabilities.md` and `docs/api_examples.md`; never as a table in `README.md`.
+7. Update every document the doc-impact map names for the change, in the same change: `src/` is the reference, and a document names nothing `src/` lacks. The README stays user-facing, at most 250 lines, with no method table.
 8. Deliver **one** commit message (`HydrologicalTwinAlphaSeries-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
 
 The plans are in [DevTickets/](../.dev/DevTickets/README.md). The
@@ -158,7 +160,7 @@ The layers (L1 `ht/client` → L2 `ht/developer` → L3 `services` → `domain`
 → `config`/`tools`), the import rules, the public interface and the
 QGIS-free rule are in [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md).
 Data flow: `CaWaQS-ViZ → HydrologicalTwinClient → operations_client →
-HydrologicalTwin (8 macro-verbs) → services → Compartment → CaWaQS output
+HydrologicalTwin (9 macro-verbs) → services → Compartment → CaWaQS output
 files`.
 
 ## Document conventions
