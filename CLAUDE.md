@@ -1,4 +1,4 @@
-# ComplexGitSync
+# CaWaQS
 
 *Created: 2026-08-31*
 
@@ -11,37 +11,34 @@ doing development work in this repo: what to load first, where each kind of
 rule lives, and the titles of the eight steps that finish a change. It holds
 no command and no rule that is stated elsewhere.
 
-**Why it exists.** The rules used to be written here, in full, and again in
-three other files, and the copies drifted. Every agentic topic now has a
-shared *pattern* in `.agent/.distant/` and, where this project makes a
-choice, one short *fill-in* in `.agent/.local/` that opens with a
-`*Fills in:*` line ([SpecTree.md](../../.distant/dev-sync/SpecTree.md) §2).
-This file is the way in.
+**Why it exists.** Every agentic topic has a shared *pattern* in
+`.agent/.distant/` and, where this project makes a choice, one short
+*fill-in* in `.agent/.local/` that opens with a `*Fills in:*` line
+([SpecTree.md](../../.distant/dev-sync/SpecTree.md) §2). This file is the way
+in.
 
-**What you will find.** What the project is, the two installs, the layout of
-the two levels, what to do when the owner says `implement <ticket>`, the
-eight checklist steps, and the few rules that have no other home.
+**What you will find.** What the project is, the layout of the two levels,
+what to do when the owner says `implement <ticket>`, the eight checklist
+steps, and the few rules that have no other home.
 
 **Who it is for.** Anyone changing code or docs in this repo. End users only
 need [README.md](../../../README.md); this file is for development.
 
 **What you need to do with it.** **Load [digest.md](../.localSpec/digest.md)
 in full, now:** it is every `MUST`/`NEVER` rule this spec tree states, one
-line each, short enough to read in a session's opening moments, so a rule
-like "an agent is never credited on a commit" sits in view instead of two
-hops behind a pointer. Then follow the steps below, and read the fill-in a
-step points to.
+line each, short enough to read in a session's opening moments. Then follow
+the steps below, and read the fill-in a step points to.
 
 ```mermaid
 graph TD
     CLAUDE["CLAUDE.md<br/>YOU ARE HERE"] -->|"load in full, every session"| DIGEST["digest.md"]
-    CLAUDE -->|"'implement X': ask, work,<br/>launch the orchestrator"| PAIR["worker + orchestrator<br/>(gated: check-tickets)"]
-    CLAUDE -->|"the eight steps"| DEV["cgitsync-dev.md<br/>(.dev)"]
+    CLAUDE -->|"'implement X': ask, work,<br/>launch the orchestrator"| PAIR["worker + orchestrator"]
+    CLAUDE -->|"the eight steps"| DEV["cawaqs-dev.md<br/>(.dev)"]
     DEV --> VER["Versioning.md"]
     CLAUDE -->|"tickets"| TK["DevTickets/README.md"]
-    CLAUDE -->|"architecture"| SPEC["AdditionalSpecs.md"]
+    CLAUDE -->|"the product and its layers"| SPEC["AdditionalSpecs.md"]
     CLAUDE -->|"the patterns"| DIST[".agent/.distant/<br/>DevSpecs · AgentConduct<br/>SpecTree · TICKETLIFECYCLE · DOCSTYLE"]
-    CLAUDE -->|"gate before commit"| CI["lint + test + status errors=0"]
+    CLAUDE -->|"gate before commit"| CI["pixi run build + check-version<br/>+ regression cases"]
 
     classDef here fill:#1565C0,color:#fff,stroke:#111,stroke-width:2px;
     class CLAUDE here;
@@ -49,25 +46,27 @@ graph TD
 
 ---
 
-`cgitsync` synchronises a multi-repository Git workspace (a tree of nested
-repos) from a hand-written `.cgs` spec and a generated `.gts` state
-snapshot. User-facing docs and CLI usage: [README.md](../../../README.md).
-File formats: `.cgs` (hand-written topology, TOML), `.gts` (generated
-snapshot), `.lgr` (generated local register / append-only sync ledger).
+CaWaQS (CAtchment WAter Quality Simulator) is a physically based coupled
+surface–subsurface model written in C (with flex, bison and one Fortran
+file), built on 17 libraries. User-facing docs and installation:
+[README.md](../../../README.md). **CaWaQS never depends on ComplexGitSync**:
+it installs and builds with git, bash, gcc and make alone. ComplexGitSync is
+a development tool of this Operating Space only.
 
-## Layout — the two installs and the two levels
+## Layout — the product and the Operating Space
 
-- **`install.cgs`** (repository root) is the *user* install: the tool and
-  its documentation. **`examples/cgitsync-alpha.cgs`** is the *developer*
-  install: the same, plus every agentic mount and `.memory` at `.cgitsync`.
-  It is what CI dogfoods and what you bootstrap from (`DevSpecs.md`, *Two
-  installs*; the commands are in [cgitsync-dev.md](../.dev/cgitsync-dev.md)).
-- `src/ComplexGitSync/` source; `tests/unit/`, `tests/integration/`;
-  `examples/`; `docs/` (LaTeX, built PDFs tracked).
+- The cawaqs root holds `src/` (the C sources of cawaqs, its `Makefile`,
+  `param_caw.h`, the install scripts `make_Cawaqs*.sh`), `docs/`, `pixi.toml`
+  (the one SemVer of CaWaQS), `CITATION.cff`, `install.sh` and `README.md`.
+- `src/lib*` are the 17 libraries, each its own repository, and `src/scripts`
+  is the `scripts` repository (the library list `list_all.dat`, the install
+  and build helpers). In a development workspace, the cawaqs root is on the
+  bare branch `4X` and every other repository on `cawaqs_4X`. The layers
+  and the frontier between `scripts`, `.dev` and ComplexGitSync are in
+  [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md).
 - **`.agent/`** is a plain directory, never a repository.
   [AgenticManifest.md](../.localSpec/AgenticManifest.md) is the one list of
-  its mounts and spec files; `pixi run check-spectree` fails when it and the
-  developer `.cgs` disagree. The path answers "may I edit this?":
+  its mounts and spec files. The path answers "may I edit this?":
 
 | Under | Mount | Holds |
 |---|---|---|
@@ -75,8 +74,8 @@ snapshot), `.lgr` (generated local register / append-only sync ledger).
 | | `ticket` | [TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md) |
 | | `documentation` | [DOCSTYLE.md](../../.distant/documentation/DOCSTYLE.md) |
 | `.agent/.local/` — **ours to write** | `.claude` | this file and `AGENT.md`, a pointer stating the reading order |
-| | `.localSpec` | [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md) (architecture, the module table), [AGENT.md](../.localSpec/AGENT.md) (roles), [audit.md](../.localSpec/audit.md), [digest.md](../.localSpec/digest.md) |
-| | `.dev` | [README.md](../.dev/README.md): the checklist ([cgitsync-dev.md](../.dev/cgitsync-dev.md)), [Versioning.md](../.dev/Versioning.md), and [DevTickets/](../.dev/DevTickets/README.md) — **private**; the public repository holds no tickets |
+| | `.localSpec` | [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md) (the product, its layers, the version rules), [AGENT.md](../.localSpec/AGENT.md) (roles), [audit.md](../.localSpec/audit.md), [digest.md](../.localSpec/digest.md) |
+| | `.dev` | [README.md](../.dev/README.md): the checklist ([cawaqs-dev.md](../.dev/cawaqs-dev.md)), [Versioning.md](../.dev/Versioning.md), the private `scripts/versioning.py`, and [DevTickets/](../.dev/DevTickets/README.md) — **private**; the public repository holds no tickets |
 
 `CLAUDE.md` and `AGENT.md` at the project root are symbolic links into
 `.agent/.local/.claude/`.
@@ -91,29 +90,24 @@ These are orders, not a description, and they come before the eight steps
    optional and needs no further permission.
 2. **Read the ticket, then ask every open *Decisions for the owner* with
    `AskUserQuestion` before the first edit.** A recommendation is never the
-   answer. A raise of a ceiling baseline is asked the same way.
-3. **Implement as the worker**: code, tests, docs, `pixi run bump-build`.
-   **Never** run `bump-version`, write a self-history record, or score your
-   own work.
+   answer.
+3. **Implement as the worker**: code, tests, docs, and `pixi run bump-build
+   <lib>` for each library whose `src/` you changed. **Never** run
+   `bump-version`, write a self-history record, or score your own work.
 4. **Launch the orchestrator with the Agent tool, in the foreground.** Give
    it the ticket's name, every repository the diff touches, and the
    owner's answers. Tell it to quote the work against the eight steps,
-   decide the version level, run `pixi run bump-version`, rebuild the PDFs,
-   and write the record with `cgitsync self-history add`. Tell it to
-   propose **one** commit message, to be used unchanged in every repository
-   the diff touches.
+   decide the version level, run `pixi run bump-version`, and write the
+   record. Tell it to propose **one** commit message, `cawaqs-<SemVer>`, to
+   be used unchanged in every repository the diff touches.
 5. **Fix every defect it reports, then send the work back to the same
    orchestrator** for a re-quote. Repeat until it reports no blocking
    defect.
 6. **Only then archive the ticket and deliver the commit message.**
-   `pixi run check-tickets` and `cgitsync commit` refuse a planning ticket
-   archived without its orchestrator's record.
 
 Drafting, ranking or closing a ticket is orchestration already and
-launches nobody. Why the pair exists and why it is written as orders:
-[AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4 and §4.1. This
-block restates §4.1 on purpose, as this project's exception (owner,
-2026-10-09): the orders bind only in the file every session loads.
+launches nobody. Why the pair exists:
+[AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §4 and §4.1.
 
 ## When the owner says `implement "CORR: @agent-dev"`
 
@@ -125,38 +119,35 @@ These are orders too (owner, 2026-10-29). A file whose first line is `CORR:` or 
    what a note leaves open, before the first edit.
 3. **Remove the header and the note once resolved.** The file must be valid for its format again.
 4. **If a resolution changes `src/`, it is an `implement`**, with the orders above. Otherwise run the gates
-   (lint, test, `status`) and deliver the commit message yourself.
+   and deliver the commit message yourself.
 5. **List each correction and its resolution** in the report, so the owner can check every one.
 
 ## Before committing — the eight steps
 
 Do all of them as part of the change, not as a follow-up. **Each step's
-command and detail are in [cgitsync-dev.md](../.dev/cgitsync-dev.md)**; the
+command and detail are in [cawaqs-dev.md](../.dev/cawaqs-dev.md)**; the
 shape and the reason are [AgentConduct.md](../../.distant/dev-sync/AgentConduct.md) §1.
 
-1. `pixi run lint` and `pixi run test` must both pass.
-2. `pixi run bump-build` for any change under `src/`.
+1. `pixi run build` must succeed with no new warning, and the regression cases must run.
+2. `pixi run bump-build <lib>` for each library whose `src/` changed.
 3. `cgitsync status`, run from this tree's own root, must show `errors=0`.
-4. `pixi run bump-version {major,minor,patch}` after every `bump-build`, `patch` at least (or `cgitsync version bump {patch,minor,major}`, which runs it across the tree).
-5. Rebuild the docs PDFs after every `bump-version` and every docs change.
-6. Update `AdditionalSpecs.md`'s architecture section if module responsibility moved.
-7. Document any new CLI command in the user guide and the API docs; never in `README.md`.
-8. Deliver **one** commit message (`cgitsync-<version>`, three lines), used unchanged in every repository touched; never push without being asked.
+4. `pixi run bump-version {major,minor,patch}` once per change, by the orchestrator; regular SemVer unless the owner states an exception for the release.
+5. Docs: the PDF documentation is mounted by the owner later; until then, update the README and `CITATION.cff` only through `bump-version`.
+6. Update `AdditionalSpecs.md` if a layer, a version rule or the frontier moved.
+7. Document any new option of an install script in `README.md`'s install tables, which are the user's page.
+8. Deliver **one** commit message (`cawaqs-<SemVer>`, three lines), used unchanged in every repository touched; never push without being asked.
 
-The plans are in [DevTickets/](../.dev/DevTickets/README.md). The data
-contract and the attribution rules (an agent is never credited on a commit;
-the public front uses `vendor-name` and `model-name`) are filled in in
-[cgitsync-dev.md](../.dev/cgitsync-dev.md).
+`pixi run check-version` must pass before step 8. The plans are in
+[DevTickets/](../.dev/DevTickets/README.md). An agent is never credited on a
+commit; the attribution rules are filled in in
+[cawaqs-dev.md](../.dev/cawaqs-dev.md).
 
 ## Architecture boundary
 
-The module responsibilities, the ring model and the single-implementation
-rules (`parse_repo_id()`, `git_branch.py`, `git_runner.py`,
-`universal_clock.py`, the CLI mirroring the Python API) are in
-[AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md), *Responsibility
-boundaries*. Data flow: `CLI / Python caller → ComplexGitSyncClient →
-cgs_format.py → CgsDocument → GitTree → orchestre/ → registry.py /
-operations/ → GitRepo / git_runner.py`.
+The product's layers, the single-implementation rules (one build in
+`scripts/build_tree.sh` once `scripts` 1.0.0 lands, one SemVer in
+`pixi.toml`, a library's build kept in its own `Makefile` and `param_*.h`)
+and the version rules are in [AdditionalSpecs.md](../.localSpec/AdditionalSpecs.md).
 
 ## Document conventions
 
@@ -164,13 +155,9 @@ Follow [DOCSTYLE.md](../../.distant/documentation/DOCSTYLE.md) for every
 Markdown document in this repo — abstract first, mermaid graph, audience
 separation, length, one authoritative file per purpose. Every created
 document opens with a `*Created: YYYY-MM-DD*` line, and a local spec with a
-`*Fills in:*` line.
-
-**One exception (owner, 2026-10-02): the project's root `README.md`.** It is
-the user's front page, so it opens with the tool's name and what it is for,
-not with an abstract and graph. It stays short and user-facing — step 7 says
-what it holds and what it never does. Every other Markdown document, every
-other `README.md` included, follows DOCSTYLE §1.
+`*Fills in:*` line. **One exception (owner, 2026-10-02): the project's root
+`README.md`**, the user's front page. Every other Markdown document follows
+DOCSTYLE §1. No document names a person.
 
 Planning tickets carry a filename lifecycle and a `*Branch:*` line, both in
 [TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md); this
