@@ -107,7 +107,9 @@ These are orders, not a description, and they come before the eight steps
    defect.
 6. **Only then archive the ticket and deliver the commit message.**
    `pixi run check-tickets` and `cgitsync commit` refuse a planning ticket
-   archived without its orchestrator's record.
+   archived without its orchestrator's record. If the ticket carries a role (`DEV1`,
+   `DEV2`, `ORX`) it is on a roadmap: read `DevTickets/Roadmap/` before the first edit, and in the archiving change
+   recolor its node and update its status, as [TICKETLIFECYCLE.md](../../.distant/ticket/TICKETLIFECYCLE.md) §8 says.
 
 Drafting, ranking or closing a ticket is orchestration already and
 launches nobody. Why the pair exists and why it is written as orders:
